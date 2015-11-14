@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div align="center"><h2> Node Configure Detail</h2></div>
+{% include 'RuleDetail.html' %}
+
+<div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title">Rule->Node</h4>
+        </div>
+        <table class="table table-bordered table-striped">
+        {% if nodes %}
+         <thead>
+            <th>id</th>
+            <th>标签名</th>
+            <th>节点类型</th>
+            <th>父节点</th>
+            <th>查看</th>
+            </thead>
+        {% for node in nodes %}
+                <tr>
+                    <td>{{node.id}}</td>
+                    <td>{{node.label}}</td>
+                    <td>{{node.NodeType}}</td>
+                    <td>{{node.parentNode}}</td>
+                    <td>
+                        <form id="nodeShow" action="{{ url_for('.Nodes',NodeID=node.id) }}" method="get"
+                                style="display:inline">
+                            <button type="submit" class="btn btn-primary">Detail</button>
+                        </form>
+                    </td>
+                </tr>
+      {% endfor %}
+      {% else %}
+            <tr>
+                <td style="text-align:center"><h4>没有Node的纪录</h4></td>
+            </tr>
+    {% endif %}
+        </table>
+    </div>
+</div>
+
+
+
+
+<ul class="nav nav-tabs"></ul>
+<div align="center"><h2>Add Node Configure</h2></div>
+<div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a name="AddNode">新增Node</a>
+                <button onclick="activateNodeHelp()" style="float:right;">Help</button>
+            </h4>
+        </div>
+        <table class="table table-bordered table-striped">
+        <form name="ruleForm" method="POST">
+                <tr>
+                    <td style="width:30%"><span class="nodeLable">标签名(label)*</span></td>
+                       <td>{{ form.label(style="width:30%")}} </td>
+                </tr>
+                <tr>
+                    <td><span class="nodeType">节点类型(nodeType):</span></td>
+                    <td>
+                        {{ form.nodeType}}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="parentNode">父节点(parentNode):</span></td>
+                    <td> {{ form.parentNode}}</td>
+                </tr>
+                <tr>
+                    <td>解释器配置项:</td>
+                    <td>
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <td><span class="inputType">输入类型(inputType):</span></td>
+                                <td>
+                                     {{ form.inputType}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="inputOption">输入选项(inputOption):</span></td>
+                                <td>
+                                  {{ form.inputOption(style="width:98%")}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td  style="width:30%"><span class="extractorType">类型(extractorType):</span></td>
+                                <td>
+                                     {{ form.extractorType(style="width:30%")}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="condition">条件(condition):</span></td>
+                                  <td>{{ form.condition(style="width:98%")}}</td>
+                            </tr>
+                            <tr>
+                                <td><span class="value">选项(value):</span></td>
+                                <td>
+                                     {{ form.value(style="width:98%")}}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left">
+                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleID=rules.id) }}">返回Rule页</a>
+                    </td>
+                    <td style="text-align:right">
+                        {{ form.csrf_token }}
+                        {{form.submit()}}
+                    </td>
+                </tr>
+                </form>
+        </table>
+    </div>
+</div>
+{% endblock %}

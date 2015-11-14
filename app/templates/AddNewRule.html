@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 {% block page_content %}
-<!-- <form role="form">
-  <div class="form-group">
-    <label for="name">测试结果页</label>
-    <textarea class="form-control" rows="15">{{ name }}</textarea>
-  </div>
-</form> -->
 <div align="center"><h2>Rule Configure Detail</h2></div>
 <div>
     <div class="panel panel-primary">
@@ -19,7 +13,7 @@
         <form name="ruleForm" method="POST">
                 <tr>
                     <td style="width:30%">ID:</td>
-                    <td>{{id}}</td>
+                    <td>{{RuleId}}</td>
                 </tr>
                 <tr>
                     <td>简介(description):</td>
@@ -60,5 +54,4 @@
             </form>
         </table>
     </div>
-</div>
 {% endblock %}
