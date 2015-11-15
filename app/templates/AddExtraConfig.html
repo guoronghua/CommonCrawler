@@ -90,7 +90,7 @@
                 <tr>
                     <td><span class="condition">条件(condition):</span></td>
                     <td>
-                   {{ form.inputOption(style="width:98%")}}
+                   {{ form.condition(style="width:98%")}}
                     </td>
                 </tr>
                 <tr>
@@ -130,8 +130,3 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script src="{{url_for('static', filename='form.js')}}"></script>
-{{super()}}
-
-{% endblock %}

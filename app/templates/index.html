@@ -1,64 +1,143 @@
 {% extends "base.html" %}
 {% block page_content %}
-<!-- <form role="form">
-  <div class="form-group">
-    <label for="name">测试结果页</label>
-    <textarea class="form-control" rows="15">{{ name }}</textarea>
-  </div>
-</form> -->
-<div align="center"><h2>Rule Configure Detail</h2></div>
+{% import "_macros.html" as macros %}
+<form action="/admin/rule/index" method="get">
+    <table id="ruleSearchTable" class="table table-bordered" style="display: none">
+        <thead>
+        <tr>
+            <td>关键字</td>
+            <td>解析类型</td>
+            <td>页面类型</td>
+            <td>文档类型</td>
+            <td>状态</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tr>
+            <td><input type="text" id="searchWord" name="searchWord" style="width:98%" tabindex="2"></td>
+            <td>
+                <select name="parserType" style="width: auto">
+                    <option value=''>ALL</option>
+                        <option value='DEFAULT_PARSER_TYPE'>DEFAULT_PARSER_TYPE</option>
+                        <option value='JSOUP'>JSOUP</option>
+                        <option value='XML'>XML</option>
+                        <option value='JSON'>JSON</option>
+                        <option value='IMAGE_MAGICK'>IMAGE_MAGICK</option>
+
+                </select>
+            </td>
+            <td>
+                <select name="pageType" style="width: auto">
+                    <option value=''>ALL</option>
+                        <option value='DEFAULT_PAGE_TYPE'>DEFAULT_PAGE_TYPE</option>
+                        <option value='SEED'>SEED</option>
+                        <option value='LIST'>LIST</option>
+                        <option value='DETAIL'>DETAIL</option>
+                </select>
+            </td>
+            <td>
+                <select name="docType" style="width: auto">
+                    <option value=''>ALL</option>
+                        <option value='DOC_TYPE_AD_BID'>DOC_TYPE_AD_BID</option>
+                        <option value='DOC_TYPE_ANIMATION'>DOC_TYPE_ANIMATION</option>
+                        <option value='DOC_TYPE_APK'>DOC_TYPE_APK</option>
+                        <option value='DOC_TYPE_APP'>DOC_TYPE_APP</option>
+                        <option value='DOC_TYPE_AUDIO_BOOK'>DOC_TYPE_AUDIO_BOOK</option>
+
+                </select>
+            </td>
+            <td>
+                <select name="state" style="width: auto">
+                    <option value=''>ALL</option>
+                        <option value='ENABLE'>ENABLE</option>
+                        <option value='DISABLE'>DISABLE</option>
+                </select>
+            </td>
+            <td style="text-align:left">
+                <button type="submit" class="btn btn-primary">search</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
 <div>
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <a name="Rule">Rule</a>
-                <button onclick="activateRuleHelp()" style="float:right;">Help</button>
+                <a>Rule</a>
+                <button onclick="toggleRuleSearch();" style="float:right;">Search</button>
             </h4>
         </div>
+
         <table class="table table-bordered table-striped">
-        <form name="ruleForm" method="POST">
-                <tr>
-                    <td style="width:30%">ID:</td>
-                    <td>{{id}}</td>
-                </tr>
-                <tr>
-                    <td>简介(description):</td>
-                    <td>{{ form.description(style="width:95%")}} </td>
-                </tr>
-                <tr>
-                    <td><span class="pattern">模式(pattern)</span></td>
-                    <td>{{ form.pattern(style="width:95%")}}</td>
-                </tr>
-                <tr>
-                    <td><span class="instance">实例(instance)*:</span></td>
-                    <td>{{ form.instance(style="width:95%")}}</td>
-                </tr>
-                <tr>
-                    <td><span class="parserType">解析类型(parserType):</span></td>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>模式</th>
+                <th>解析类型</th>
+                <th>页面类型</th>
+                <th>状态</th>
+                <th>查看</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+     {% if rules %}
+    {% for rule in rules %}
+     <tr>
+                    <td>{{rule.id}}</td>
+                    <td style="word-break:break-all">{{rule.pattern}}</td>
+                    <td>{{rule.parserType}}</td>
+                    <td>{{rule.pageType}}</td>
+                    <td>{{rule.state}}</td>
                     <td>
-                    {{ form.parserType(style="width:95%")}}
+                        <form id="ruleShow" action="{{ url_for('.Rules',RuleID=rule.id) }}" method="get" style="display:inline">
+                            <button type="submit" class="btn btn-primary">Detail</button>
+                        </form>
                     </td>
-                </tr>
-                <tr>
-                    <td><span class="pageType">页面类型(pageType):</span></td>
                     <td>
-                    {{ form.pageType(style="width:95%")}}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-list">Tool</span>
+                            </button>
+                            <ul class="dropdown-menu js-rule-action" role="menu" data-rule-id="1">
+                                <li><a href="/admin/rule/treeview?ruleId=1" target="_blank">概览</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" data-action="copy">复制</a></li>
+                                <li><a href="#" data-action="export">导出</a></li>
+                                <li><a href="/admin/rule/1/validate" data-action="validate">检验</a></li>
+                                <li><a href="/admin/rule/1/test#RuleTest">测试</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" data-action="delete">删除</a></li>
+                            </ul>
+                            <form class="js-form-delete" action="/admin/rule/1" method="post" style="display: none">
+                                <input type="hidden" name="page" value="1"/>
+                                <input type="hidden" name="_method" value="delete"/>
+                            </form>
+                            <form class="js-form-copy" action="/admin/rule/1/copy" method="post" style="display: none"></form>
+                            <form class="js-form-export" action="/admin/rule/1/export" method="post" style="display: none"></form>
+                        </div>
                     </td>
                 </tr>
-                <tr>
-                    <td><span class="state">状态(state):</span></td>
-                    <td>
-                   {{ form.state(style="width:95%")}}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:right">
-                        {{ form.csrf_token }}
-                        {{form.submit()}}
-                    </td>
-                </tr>
-            </form>
-        </table>
+      {% endfor %}
+      {% else %}
+                  <tr>
+                <td style="text-align:center"><h4>没有Rule的纪录</h4></td>
+            </tr>
+    {% endif %}
+ </table>
+    </div>
+
+<div class="sourcePage">
+
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.Index') }}
+</div>
+{% endif %}
     </div>
 </div>
+    </div>
+    </body>
+</html>
+
 {% endblock %}

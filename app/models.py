@@ -1,4 +1,5 @@
 from . import db
+from datetime import datetime
 
 class Rule(db.Model):
     __tablename__ = 'rules'
@@ -10,7 +11,7 @@ class Rule(db.Model):
     pageType=db.Column(db.String(64))
     state=db.Column(db.String(64))
     nodes=db.relationship('Node', backref='rule', lazy='dynamic')
-
+    # timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 class Node(db.Model):
     __tablename__ = 'nodes'
     id = db.Column(db.Integer,primary_key=True)

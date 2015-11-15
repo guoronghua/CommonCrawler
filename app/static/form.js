@@ -227,7 +227,7 @@ window.onload = function () {
 function toggleLinkSetting() {
     var resultTypeElement = document.getElementById("resultType");
     var resultTypeValue = resultTypeElement.options[resultTypeElement.selectedIndex].value;
-    if (resultTypeValue != "3") {
+    if (resultTypeValue != 'LINK') {
         document.getElementById("linkSetting").style.display = "none";
     } else {
         document.getElementById("linkSetting").style.display = "";
