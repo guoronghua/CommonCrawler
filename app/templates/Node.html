@@ -116,7 +116,7 @@
                             </form>
                         </td>
                         <td>
-                            <form id="propDelete" action="/admin/rule/prop/{{properity.id}}" method="post"
+                            <form id="propDelete" action="{{ url_for('.DeleteProperties',PropertyID=properity.id) }}" method="post"
                                     style="display:inline">
                                 <input id="ruleId" name="ruleId" type="hidden" value='5376'/>
                                 <input id="nodeId" name="nodeId" type="hidden" value='38578'/>

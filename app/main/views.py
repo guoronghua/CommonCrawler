@@ -15,9 +15,6 @@ def Index():
     rules = pagination.items
     return render_template('index.html', rules=rules,pagination=pagination)
 
-
-
-
 @main.route('/rule/skeleton', methods=['GET', 'POST'])
 def AddNewRule():
     form = RuleForm()
@@ -36,7 +33,6 @@ def AddNewRule():
     else:
         return render_template('AddNewRule.html',form=form)
 
-
 @main.route('/rule/node/skeleton/ruleId=<int:RuleId>#AddNode', methods=['GET', 'POST'])
 def AddNode(RuleId):
     rules = Rule.query.filter_by(id=RuleId).first()
@@ -53,7 +49,6 @@ def AddNode(RuleId):
         return  redirect(url_for('.AddProperty',NodeId=nodeid))
     else:
         return render_template('AddNode.html',id=RuleId,form=form,rules=rules,nodes=nodes)
-
 
 @main.route('/rule/prop/skeleton?nodeId=<NodeId>#Property', methods=['GET', 'POST'])
 def AddProperty(NodeId):
@@ -73,7 +68,6 @@ def AddProperty(NodeId):
     else:
         return render_template('AddProperty.html',form=form,rules=rules,nodes=nodes,properties=properties)
 
-
 @main.route('/rule/prop/skeleton?propId=<propertyID>#ExtraConfig', methods=['GET', 'POST'])
 def AddExtraConfig(propertyID):
     form= ExtraConfigForm(propertyID)
@@ -91,7 +85,6 @@ def AddExtraConfig(propertyID):
         return  redirect(url_for('.AddExtraConfig', propertyID=propertyID))
     else:
         return render_template('AddExtraConfig.html',form=form,rules=rules,nodes=nodes,properties=properties,extraconfigs=extraconfigs)
-
 
 @main.route('/rule/<RuleID>', methods=['GET', 'POST'])
 def Rules(RuleID):
@@ -115,7 +108,17 @@ def Rules(RuleID):
         form.parserType.data=rules.parserType
         form.pageType.data=rules.pageType
         form.state.data=rules.state
-        return render_template('Rule.html',form=form,nodes=nodes,RuleId=RuleID)
+        return render_template('Rule.html',form=form,nodes=nodes,RuleID=RuleID)
+
+@main.route('/rule/delete/<RuleID>', methods=['GET', 'POST'])
+def DeleteRules(RuleID):
+    rules = Rule.query.get_or_404(RuleID)
+    if  rules:
+        db.session.delete(rules)
+        db.session.commit()
+        return  redirect(url_for('.Index'))
+    else:
+        pass
 
 @main.route('/rule/node/<NodeID>#Node', methods=['GET', 'POST'])
 def Nodes(NodeID):
@@ -149,6 +152,15 @@ def Nodes(NodeID):
         form.value.data=nodes.value
         return render_template('Node.html',form=form,nodes=nodes,rules=rules,properties=properties)
 
+@main.route('/rule/node/delete/<NodeID>#Node', methods=['GET', 'POST'])
+def DeleteNodes(NodeID):
+    nodes = Node.query.get_or_404(NodeID)
+    if  nodes:
+        db.session.delete(nodes)
+        db.session.commit()
+        return  redirect(url_for('.Rules',RuleID=session.get('RuleId')))
+    else:
+        pass
 
 @main.route('/rule/property/<PropertyID>', methods=['GET', 'POST'])
 def Properties(PropertyID):
@@ -185,6 +197,17 @@ def Properties(PropertyID):
         form.resultType.data=properties.resultType
         return render_template('Property.html',form=form,rules=rules,nodes=nodes,properties=properties,extraConfigs=extraConfigs)
 
+@main.route('/rule/property/delete/<PropertyID>', methods=['GET', 'POST'])
+def DeleteProperties(PropertyID):
+    properties = Property.query.get_or_404(PropertyID)
+    if  properties:
+        db.session.delete(properties)
+        db.session.commit()
+        return  redirect(url_for('.Nodes',NodeID=session.get('NodeID')))
+    else:
+        pass
+
+
 @main.route('/rule/extraconfig/<ExtraConfigID>', methods=['GET', 'POST'])
 def ExtraConfigs(ExtraConfigID):
     rules = Rule.query.filter_by(id=session.get('RuleId')).first()
@@ -212,3 +235,13 @@ def ExtraConfigs(ExtraConfigID):
         form.value.data=extraconfigs.value
         form.refExtraConfigId.data=extraconfigs.refExtraConfigId
         return render_template('ExtraConfig.html',form=form,rules=rules,nodes=nodes,properties=properties,extraconfigs=extraconfigs)
+
+@main.route('/rule/extraconfig/delete/<ExtraConfigID>', methods=['GET', 'POST'])
+def DeleteExtraConfigs(ExtraConfigID):
+    extraconfigs=ExtraConfig.query.get_or_404(ExtraConfigID)
+    if  extraconfigs:
+        db.session.delete(extraconfigs)
+        db.session.commit()
+        return  redirect(url_for('.Properties',PropertyID=session.get('PropertyID')))
+    else:
+        pass

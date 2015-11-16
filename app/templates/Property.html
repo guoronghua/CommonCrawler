@@ -78,7 +78,6 @@
                         <a class="btn btn-primary" href="{{ url_for('.Nodes',NodeID=nodes.id) }}">返回Node</a>
                     </td>
                     <td style="text-align:right">
-<!--                         <button type="submit" class="btn btn-primary" style="margin-right:15px">Submit</button> -->
  {{ form.csrf_token }}
   {{ form.submit}}
                     </td>
@@ -130,7 +129,7 @@
                         </form>
                     </td>
                     <td>
-                        <form id="extraConfigDelete" action="/admin/rule/extraConfig/2"
+                        <form id="extraConfigDelete" action="{{ url_for('.DeleteExtraConfigs',ExtraConfigID=extraConfig.id) }}"
                                 method="post" style="display:inline">
                             <input type="hidden" name="ruleId" value='1'/>
                             <input type="hidden" name="nodeId" value='1'/>
