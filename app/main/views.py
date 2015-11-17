@@ -25,11 +25,11 @@ def AddNewRule():
                 parserType=form.parserType.data,pageType=form.pageType.data,state=form.state.data)
             db.session.add(rule)
             db.session.commit()
-            ruleid=rule.id
+            RuleId=rule.id
         else:
-            ruleid=Rule.query.filter_by(description=form.description.data).first().id
-        session['RuleId']=ruleid
-        return  redirect(url_for('.AddNode', RuleId=ruleid))
+            RuleId=Rule.query.filter_by(description=form.description.data).first().id
+        session['RuleId']=RuleId
+        return  redirect(url_for('.AddNode', RuleId=RuleId))
     else:
         return render_template('AddNewRule.html',form=form)
 
