@@ -10,8 +10,9 @@ class Rule(db.Model):
     parserType=db.Column(db.String(64))
     pageType=db.Column(db.String(64))
     state=db.Column(db.String(64))
-    nodes=db.relationship('Node', backref='rule', lazy='dynamic')
-    # timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    nodes=db.relationship('Node', backref='rule', lazy='dynamic',cascade="all, delete-orphan")
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
 class Node(db.Model):
     __tablename__ = 'nodes'
     id = db.Column(db.Integer,primary_key=True)
@@ -24,7 +25,7 @@ class Node(db.Model):
     condition=db.Column(db.String(64))
     value=db.Column(db.String(64))
     rule_id=db.Column(db.Integer, db.ForeignKey('rules.id'))
-    properties=db.relationship('Property', backref='property', lazy='dynamic')
+    properties=db.relationship('Property', backref='property', lazy='dynamic',cascade="all, delete-orphan")
 
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -39,7 +40,7 @@ class Property(db.Model):
     referer=db.Column(db.String(64))
     parserType=db.Column(db.String(64))
     node_id=db.Column(db.Integer, db.ForeignKey('nodes.id'))
-    extraConfigs=db.relationship('ExtraConfig', backref='extraConfig', lazy='dynamic')
+    extraConfigs=db.relationship('ExtraConfig', backref='extraConfig', lazy='dynamic',cascade="all, delete-orphan")
 
 class ExtraConfig(db.Model):
     __tablename__ = 'extraConfigs'

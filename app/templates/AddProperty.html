@@ -122,11 +122,10 @@
                 </tr>
                 <tr>
                     <td style="text-align:left">
-                        <a class="btn btn-primary" href="/admin/rule/5654#Rule">返回Rule</a>
-                        <a class="btn btn-primary" href="/admin/rule/node/38092#Node">返回Node</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleID=rules.id) }}le">返回Rule</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Nodes',NodeID=nodes.id) }}">返回Node</a>
                     </td>
                     <td style="text-align:right">
-<!--                         <button type="submit" class="btn btn-primary" style="margin-right:15px">Submit</button> -->
  {{ form.csrf_token }}
   {{ form.submit}}
                     </td>

@@ -64,6 +64,7 @@ def AddProperty(NodeId):
         db.session.commit()
         propertyID=properties.id
         session['NodeId']=NodeId
+        session['RuleId']=rules.id
         return  redirect(url_for('.AddExtraConfig', propertyID=propertyID))
     else:
         return render_template('AddProperty.html',form=form,rules=rules,nodes=nodes,properties=properties)
