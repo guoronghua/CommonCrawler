@@ -96,9 +96,11 @@
                 <li><a href="/admin/authority/audit/index">查看操作记录</a></li>
             </ul>
         </li>
-        <form id="ruleSearch" action="/rule/index" method="get" style="text-align:right">
+
+        <form id="ruleSearch" action="{{url_for('.Search')}}" method="get" style="text-align:right">
             <input type="text" name="searchWord" placeholder="Search Rule" tabindex="1"/>
         </form>
+
     </ul>
 {% endblock %}
 

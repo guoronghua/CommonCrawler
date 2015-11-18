@@ -10,7 +10,16 @@ import requests,time,os
 def Index():
     page = request.args.get('page', 1, type=int)
     rule=Rule.query
-    pagination = rule.order_by(Rule.description.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+    pagination = rule.order_by(Rule.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    rules = pagination.items
+    return render_template('index.html', rules=rules,pagination=pagination)
+
+@main.route('/rule/index/', methods=['GET', 'POST'])
+def Search():
+    searchWord = request.args.get('searchWord')
+    rule=Rule.query.filter(Rule.description.like('%' + searchWord + '%'))
+    pagination = rule.order_by(Rule.description.desc()).paginate(page=1, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     rules = pagination.items
     return render_template('index.html', rules=rules,pagination=pagination)
