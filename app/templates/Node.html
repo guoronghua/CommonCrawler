@@ -146,10 +146,8 @@
                 </tr>
                 <tr>
                     <td colspan="10" style="text-align:center">
-                        <form id="propCopy" action="/admin/rule/prop/copy" method="post" style="display:inline">
-                            <input type="text" name="propId" placeholder="PropId"/>
-                            <input id="ruleId" name="ruleId" type="hidden" value='5376'/>
-                            <input id="nodeId" name="nodeId" type="hidden" value='38578'/>
+                        <form id="propCopy" action="{{ url_for('.CopyProperties') }}" method="get" style="display:inline">
+                            <input type="text" name="propertyId" placeholder="propertyId"/>
                             <button type="submit" class="btn btn-primary" style="margin-right:15px">复制Prop</button>
                         </form>
                     </td>
@@ -160,10 +158,8 @@
                 </tr>
                 <tr>
                     <td colspan="10" style="text-align:center">
-                        <form id="propCopy" action="/admin/rule/prop/copy" method="post" style="display:inline">
-                            <input type="text" name="propId" placeholder="PropId"/>
-                            <input id="ruleId" name="ruleId" type="hidden" value='5770'/>
-                            <input id="nodeId" name="nodeId" type="hidden" value='38580'/>
+                        <form id="propCopy" action="{{ url_for('.CopyProperties') }}" method="get" style="display:inline">
+                            <input type="text" name="propertyId" placeholder="propertyId"/>
                             <button type="submit" class="btn btn-primary" style="margin-right:15px">复制Prop</button>
                         </form>
                     </td>

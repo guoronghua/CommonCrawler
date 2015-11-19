@@ -11,3 +11,5 @@
         db.create_all()
 
 3,git用的最多的命令：１，git status　２，git add -A　3，git commit -m "支持删除功能" 　4，git remote add origin03 git@github.com:guoronghua/CommonCrawler.git　５，git push -u origin03 thefirst01
+
+4,今天支持了rule和node，properity以及extraconfig的复制，在视图函数里进行了多层循环实现的，待优化。

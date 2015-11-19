@@ -65,9 +65,8 @@
 
             <tr>
                 <td colspan="8" style="text-align:center">
-                    <form id="nodeCopy" action="/admin/rule/node/copy" method="post" style="display:inline">
+                    <form id="nodeCopy" action="{{ url_for('.CopyNodes') }}" method="get" style="display:inline">
                         <input type="text" name="nodeId" placeholder="NodeId"/>
-                        <input type="hidden" name="ruleId" value='5656'/>
                         <button type="submit" class="btn btn-primary" style="margin-right:15px">复制Node</button>
                     </form>
                 </td>

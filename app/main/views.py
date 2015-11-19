@@ -85,6 +85,9 @@ def AddExtraConfig(propertyID):
     nodes=Node.query.filter_by(id=session.get('NodeId')).first()
     properties=Property.query.filter_by(id=propertyID).first()
     extraconfigs=ExtraConfig.query.filter_by(property_id=propertyID).all()
+    session['NodeId']=nodes.id
+    session['RuleId']=rules.id
+    session['PropertyID']=properties.id
     if form.validate_on_submit():
         extraConfigs = ExtraConfig(inputType=form.inputType.data,inputOption=form.inputOption.data, transformType=form.transformType.data,
             extractorType=form.extractorType.data,condition=form.condition.data,value=form.value.data,
@@ -130,6 +133,46 @@ def DeleteRules(RuleID):
     else:
         pass
 
+@main.route('/rule/copy/<RuleID>', methods=['GET', 'POST'])
+def CopyRules(RuleID):
+    rules = Rule.query.get_or_404(RuleID)
+    rule = Rule(description=u"复制于Rule %s"%rules.id,pattern=rules.pattern,instance=rules.instance,
+                parserType=rules.parserType,pageType=rules.pageType,state=rules.state)
+    db.session.add(rule)
+    db.session.commit()
+    nodes=Node.query.filter_by(rule_id=RuleID).all()
+    if nodes:
+        for node in nodes:
+            node1 = Node(label=node.label,nodeType=node.nodeType,parentNode=node.parentNode,
+            inputType=node.inputType,inputOption=node.inputOption,extractorType=node.extractorType,
+            condition=node.condition,value=node.value,rule_id=rule.id)
+            db.session.add(node1)
+            db.session.commit()
+            properties=Property.query.filter_by(node_id=node.id).all()
+            if properties:
+                for propertie in properties:
+                    propertie1= Property(glue=propertie.glue,label=propertie.label,isRequired=propertie.isRequired,
+                        isMultiply=propertie.isMultiply,scopeType=propertie.scopeType,resultType=propertie.resultType,
+                        httpMethod=propertie.httpMethod,referer=propertie.referer,parserType=propertie.parserType,node_id=node1.id)
+                    db.session.add(propertie1)
+                    db.session.commit()
+                    extraconfigs=ExtraConfig.query.filter_by(property_id=propertie.id).all()
+                    if extraconfigs:
+                        for extraconfig in extraconfigs:
+                            extraConfig1 = ExtraConfig(inputType=extraconfig.inputType,inputOption=extraconfig.inputOption, transformType=extraconfig.transformType,
+                                    extractorType=extraconfig.extractorType,condition=extraconfig.condition,value=extraconfig.value,
+                                    refExtraConfigId=extraconfig.refExtraConfigId,property_id=propertie1.id)
+                            db.session.add(extraConfig1)
+                            db.session.commit()
+                    else:
+                        pass
+            else:
+                pass
+    else:
+        pass
+    return  redirect(url_for('.Rules',RuleID=rule.id))
+
+
 @main.route('/rule/node/<NodeID>#Node', methods=['GET', 'POST'])
 def Nodes(NodeID):
     rules = Rule.query.filter_by(id=session.get('RuleId')).first()
@@ -171,6 +214,38 @@ def DeleteNodes(NodeID):
         return  redirect(url_for('.Rules',RuleID=session.get('RuleId')))
     else:
         pass
+
+@main.route('/rule/node/copy', methods=['GET', 'POST'])
+def CopyNodes():
+    NodeID = request.args.get('nodeId')
+    nodes = Node.query.get_or_404(NodeID)
+    node1 = Node(label=nodes.label,nodeType=nodes.nodeType,parentNode=nodes.parentNode,
+                inputType=nodes.inputType,inputOption=nodes.inputOption,extractorType=nodes.extractorType,
+                condition=nodes.condition,value=nodes.value,rule_id=session.get('RuleId'))
+    db.session.add(node1)
+    db.session.commit()
+    properties=Property.query.filter_by(node_id=nodes.id).all()
+    if properties:
+        for propertie in properties:
+            propertie1= Property(glue=propertie.glue,label=propertie.label,isRequired=propertie.isRequired,
+                isMultiply=propertie.isMultiply,scopeType=propertie.scopeType,resultType=propertie.resultType,
+                httpMethod=propertie.httpMethod,referer=propertie.referer,parserType=propertie.parserType,node_id=node1.id)
+            db.session.add(propertie1)
+            db.session.commit()
+            extraconfigs=ExtraConfig.query.filter_by(property_id=propertie.id).all()
+            if extraconfigs:
+                for extraconfig in extraconfigs:
+                    extraConfig1 = ExtraConfig(inputType=extraconfig.inputType,inputOption=extraconfig.inputOption, transformType=extraconfig.transformType,
+                            extractorType=extraconfig.extractorType,condition=extraconfig.condition,value=extraconfig.value,
+                            refExtraConfigId=extraconfig.refExtraConfigId,property_id=propertie1.id)
+                    db.session.add(extraConfig1)
+                    db.session.commit()
+            else:
+                pass
+    else:
+        pass
+    return  redirect(url_for('.Rules',RuleID=session.get('RuleId')))
+
 
 @main.route('/rule/property/<PropertyID>', methods=['GET', 'POST'])
 def Properties(PropertyID):
@@ -217,6 +292,26 @@ def DeleteProperties(PropertyID):
     else:
         pass
 
+@main.route('/rule/property/copy', methods=['GET', 'POST'])
+def CopyProperties():
+    PropertyID = request.args.get('propertyId')
+    properties = Property.query.get_or_404(PropertyID)
+    propertie1= Property(glue=properties.glue,label=properties.label,isRequired=properties.isRequired,
+            isMultiply=properties.isMultiply,scopeType=properties.scopeType,resultType=properties.resultType,
+            httpMethod=properties.httpMethod,referer=properties.referer,parserType=properties.parserType,node_id=session.get('NodeID'))
+    db.session.add(propertie1)
+    db.session.commit()
+    extraconfigs=ExtraConfig.query.filter_by(property_id=properties.id).all()
+    if extraconfigs:
+        for extraconfig in extraconfigs:
+            extraConfig1 = ExtraConfig(inputType=extraconfig.inputType,inputOption=extraconfig.inputOption, transformType=extraconfig.transformType,
+                    extractorType=extraconfig.extractorType,condition=extraconfig.condition,value=extraconfig.value,
+                    refExtraConfigId=extraconfig.refExtraConfigId,property_id=propertie1.id)
+            db.session.add(extraConfig1)
+            db.session.commit()
+    else:
+        pass
+    return  redirect(url_for('.Nodes',NodeID=session.get('NodeID')))
 
 @main.route('/rule/extraconfig/<ExtraConfigID>', methods=['GET', 'POST'])
 def ExtraConfigs(ExtraConfigID):
