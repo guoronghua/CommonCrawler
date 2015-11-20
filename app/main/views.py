@@ -350,3 +350,33 @@ def DeleteExtraConfigs(ExtraConfigID):
         return  redirect(url_for('.Properties',PropertyID=session.get('PropertyID')))
     else:
         pass
+
+
+@main.route('/rule/export/<RuleID>', methods=['GET', 'POST'])
+def ExportRules(RuleID):
+    rules = Rule.query.get_or_404(RuleID)
+    rule={}
+    rule["rule"]={}
+    rule.rule["'id"]=rules.id
+    rule.rule["'pattern"]=rules.pattern
+    rule.rule["'instance"]=rules.instance
+    rule.rule["'parserType"]=rules.parserType
+    rule.rule["'pageType"]=rules.pageType
+    rule.rule["'state"]=rules.state
+
+@app.route("/<file_name>")
+def getFile(file_name):
+    headers = {"Content-Disposition": "attachment; filename=%s" % file_name}
+    with open(file_name, 'r') as f:
+        body = f.read()
+    return make_response((body, headers))
+
+
+from flask import send_file
+
+@app.route("/<file_name>")
+def getFile(file_name):
+    return send_file(file_name, as_attachment=True)
+
+
+
