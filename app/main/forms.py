@@ -22,7 +22,7 @@ class RuleForm(Form):
 class NodeForm(Form):
      label=StringField(u'标签名', validators=[Required(),])
      nodeType=SelectField(u'节点类型', choices=[('single','single'),('mutiple','mutiple')],default='single')
-     parentNode=SelectField(u'父节点',default=1,coerce=int,)
+     parentNode=SelectField(u'父节点',default=0,coerce=int,)
      inputType=SelectField(u'输入类型',choices=[('DEFAULT','DEFAULT'),('URL','URL'),('REFEREINFO','REFEREINFO'),('CONTEXTINFO','CONTEXTINFO'),('LOCALINFO','LOCALINFO')],default='DEFAULT')
      inputOption=StringField(u'输入选项')
      extractorType=SelectField(u'类型', choices=[('HTML','HTML'),('REGEX','REGEX'),('CONST','CONST'),('JSON','JSON'),('XML','XML'),('TEMPLATE','TEMPLATE'),('NEXTPAGE','NEXTPAGE'),('UDF','UDF'),('XML','XML')],default='HTML')
@@ -33,7 +33,7 @@ class NodeForm(Form):
         super(NodeForm, self).__init__(*args, **kwargs)
         self.Node=Node
         self.RuleId=RuleId
-        self.parentNode.choices = [(1,0)]
+        self.parentNode.choices = [(0,0)]
         for x in self.Node.query.filter_by(rule_id=self.RuleId).all():
             if x.id:
                 self.parentNode.choices.append((x.id,x.id))

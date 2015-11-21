@@ -1,10 +1,11 @@
 #coding=utf-8
-from flask import render_template, session, redirect, url_for, current_app,flash,request
+from flask import render_template, session, redirect, url_for, current_app,flash,request,send_file,send_from_directory
 from .. import db
 from ..models import Rule,Node,Property,ExtraConfig
 from . import main
 from .forms import RuleForm,NodeForm,PropertyForm,ExtraConfigForm
 import requests,time,os
+
 
 @main.route('/rule/index', methods=['GET', 'POST'])
 def Index():
@@ -355,28 +356,78 @@ def DeleteExtraConfigs(ExtraConfigID):
 @main.route('/rule/export/<RuleID>', methods=['GET', 'POST'])
 def ExportRules(RuleID):
     rules = Rule.query.get_or_404(RuleID)
-    rule={}
-    rule["rule"]={}
-    rule.rule["'id"]=rules.id
-    rule.rule["'pattern"]=rules.pattern
-    rule.rule["'instance"]=rules.instance
-    rule.rule["'parserType"]=rules.parserType
-    rule.rule["'pageType"]=rules.pageType
-    rule.rule["'state"]=rules.state
+    ruleDic={}
+    ruleExport={}
+    ruleDic["'id"]=rules.id
+    ruleDic["'pattern"]=rules.pattern
+    ruleDic["'instance"]=rules.instance
+    ruleDic["'parserType"]=rules.parserType
+    ruleDic["'pageType"]=rules.pageType
+    ruleDic["'state"]=rules.state
+    ruleDic["'timestamp"]=rules.timestamp
+    ruleExport["rule'"]=ruleDic
+    """查询父节点"""
+    topNodeTrees=[]
+    topNodeTreesDic={}
+    nodes=Node.query.filter_by(rule_id=RuleID,parentNode=0).all()
+    nodeDic={}
+    extraConfigDic={}
+    def ProductNodeTrees(nodes):
+    for node in nodes:
+        nodeDic["id"]=node.id
+        nodeDic["label"]=node.label
+        nodeDic["nodeType"]=node.nodeType
+        nodeDic["parentNode"]=node.parentNode
+        nodeDic["ruleId"]=RuleID
+        extraConfigDic["inputType"]=node.inputType
+        extraConfigDic["inputOption"]=node.inputOption
+        extraConfigDic["condition"]=node.condition
+        extraConfigDic["value"]=node.value
+        extraConfigDic["extractorType"]=node.extractorType
+        topNodeTreesDic["node"]=nodeDic
+        topNodeTreesDic["extraConfig"]=extraConfigDic
+        propTrees=[]
+        propTreesDic={}
+        propDic={}
+        properties=Property.query.filter_by(node_id=node.id).all()
+        for propertie in properties:
+            propDic["id"]=propertie.id
+            propDic["glue"]=propertie.glue
+            propDic["label"]=propertie.label
+            propDic["isRequired"]=propertie.isRequired
+            propDic["isMultiply"]=propertie.isMultiply
+            propDic["scopeType"]=propertie.scopeType
+            propDic["resultType"]=propertie.resultType
+            propDic["httpMethod"]=propertie.httpMethod
+            propDic["referer"]=propertie.referer
+            propDic["nodeId"]=node.id
+            propTreesDic["prop"]=propDic
+            extraConfigs=ExtraConfig.query.filter_by(property_id=propertie.id).all()
+            ExtraConfigs=[]
+            ExtraConfigsDic={}
+            for extraConfig in extraConfigs:
+                ExtraConfigsDic["id"]=extraConfig.id
+                ExtraConfigsDic["inputType"]=extraConfig.inputType
+                ExtraConfigsDic["inputOption"]=extraConfig.inputOption
+                ExtraConfigsDic["condition"]=extraConfig.condition
+                ExtraConfigsDic["value"]=extraConfig.value
+                ExtraConfigsDic["extractorType"]=extraConfig.extractorType
+                ExtraConfigsDic["transformType"]=extraConfig.transformType
+                ExtraConfigs.append(ExtraConfigsDic)
+            propTreesDic["extraConfigs"]=ExtraConfigs
+            propTrees.append[propTreesDic]
+        subnodes=Node.query.filter_by(parentNode=node.id).all()
+        if subnodes:
+            ProductNodeTrees(subnodes)
+        else:
+            pass
 
-@app.route("/<file_name>")
-def getFile(file_name):
-    headers = {"Content-Disposition": "attachment; filename=%s" % file_name}
-    with open(file_name, 'r') as f:
-        body = f.read()
-    return make_response((body, headers))
+    f= open(os.getcwd()+"/rule.text",'w')
+    f.writelines(str(rule))
+    f.close()
+    return send_file(os.getcwd()+"/rule.text", as_attachment=True)
 
 
-from flask import send_file
-
-@app.route("/<file_name>")
-def getFile(file_name):
-    return send_file(file_name, as_attachment=True)
 
 
 
