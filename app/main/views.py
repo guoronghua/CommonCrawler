@@ -5,6 +5,7 @@ from ..models import Rule,Node,Property,ExtraConfig
 from . import main
 from .forms import RuleForm,NodeForm,PropertyForm,ExtraConfigForm
 import requests,time,os
+import json
 
 
 @main.route('/rule/index', methods=['GET', 'POST'])
@@ -177,7 +178,7 @@ def CopyRules(RuleID):
 @main.route('/rule/node/<NodeID>#Node', methods=['GET', 'POST'])
 def Nodes(NodeID):
     rules = Rule.query.filter_by(id=session.get('RuleId')).first()
-    form = NodeForm()
+    form = NodeForm(RuleId=session.get('RuleId'))
     nodes = Node.query.get_or_404(NodeID)
     properties=Property.query.filter_by(node_id=NodeID).all()
     session['RuleId']=rules.id
@@ -368,12 +369,12 @@ def ExportRules(RuleID):
     ruleExport["rule'"]=ruleDic
     """查询父节点"""
     topNodeTrees=[]
-    topNodeTreesDic={}
     nodes=Node.query.filter_by(rule_id=RuleID,parentNode=0).all()
-    nodeDic={}
-    extraConfigDic={}
-    def ProductNodeTrees(nodes):
+    # def ProductNodeTrees(nodes):
     for node in nodes:
+        nodeDic={}
+        extraConfigDic={}
+        topNodeTreesDic={}
         nodeDic["id"]=node.id
         nodeDic["label"]=node.label
         nodeDic["nodeType"]=node.nodeType
@@ -387,10 +388,10 @@ def ExportRules(RuleID):
         topNodeTreesDic["node"]=nodeDic
         topNodeTreesDic["extraConfig"]=extraConfigDic
         propTrees=[]
-        propTreesDic={}
-        propDic={}
         properties=Property.query.filter_by(node_id=node.id).all()
         for propertie in properties:
+            propTreesDic={}
+            propDic={}
             propDic["id"]=propertie.id
             propDic["glue"]=propertie.glue
             propDic["label"]=propertie.label
@@ -404,8 +405,8 @@ def ExportRules(RuleID):
             propTreesDic["prop"]=propDic
             extraConfigs=ExtraConfig.query.filter_by(property_id=propertie.id).all()
             ExtraConfigs=[]
-            ExtraConfigsDic={}
             for extraConfig in extraConfigs:
+                ExtraConfigsDic={}
                 ExtraConfigsDic["id"]=extraConfig.id
                 ExtraConfigsDic["inputType"]=extraConfig.inputType
                 ExtraConfigsDic["inputOption"]=extraConfig.inputOption
@@ -414,16 +415,19 @@ def ExportRules(RuleID):
                 ExtraConfigsDic["extractorType"]=extraConfig.extractorType
                 ExtraConfigsDic["transformType"]=extraConfig.transformType
                 ExtraConfigs.append(ExtraConfigsDic)
-            propTreesDic["extraConfigs"]=ExtraConfigs
-            propTrees.append[propTreesDic]
-        subnodes=Node.query.filter_by(parentNode=node.id).all()
-        if subnodes:
-            ProductNodeTrees(subnodes)
-        else:
-            pass
-
+                propTreesDic["extraConfigs"]=ExtraConfigs
+            propTrees.append(propTreesDic)
+        # subnodes=Node.query.filter_by(parentNode=node.id).all()
+        # if subnodes:
+        #     ProductNodeTrees(subnodes)
+        # else:
+        #     pass
+        topNodeTreesDic["propTrees"]=propTrees
+        topNodeTrees.append(topNodeTreesDic)
+        ruleExport["topNodeTrees"]=topNodeTrees
+    # ruleExport=json.dumps(ruleExport)
     f= open(os.getcwd()+"/rule.text",'w')
-    f.writelines(str(rule))
+    f.writelines(ruleExport)
     f.close()
     return send_file(os.getcwd()+"/rule.text", as_attachment=True)
 
