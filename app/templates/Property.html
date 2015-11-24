@@ -74,8 +74,8 @@
                 </tr>
                 <tr>
                     <td style="text-align:left">
-                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleID=rules.id) }}">返回Rule</a>
-                        <a class="btn btn-primary" href="{{ url_for('.Nodes',NodeID=nodes.id) }}">返回Node</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleId=rules.id) }}">返回Rule</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Nodes',NodeId=nodes.id) }}">返回Node</a>
                     </td>
                     <td style="text-align:right">
  {{ form.csrf_token }}
@@ -122,14 +122,13 @@
                     <td><textarea disabled>{{extraConfig.value}}</textarea></td>
                     <td>{{extraConfig.irefExtraConfigId}}</td>
                     <td>
-                        <form id="extraConfigShow" action="{{ url_for('.ExtraConfigs',ExtraConfigID=extraConfig.id) }}"
+                        <form id="extraConfigShow" action="{{ url_for('.ExtraConfigs',ExtraConfigId=extraConfig.id) }}"
                                 method="get" style="display:inline">
-                            <input type="hidden" name="propId" value='1'/>
                             <button type="submit" class="btn btn-primary">Detail</button>
                         </form>
                     </td>
                     <td>
-                        <form id="extraConfigDelete" action="{{ url_for('.DeleteExtraConfigs',ExtraConfigID=extraConfig.id) }}"
+                        <form id="extraConfigDelete" action="{{ url_for('.DeleteExtraConfigs',ExtraConfigId=extraConfig.id) }}"
                                 method="post" style="display:inline">
                             <input type="hidden" name="ruleId" value='1'/>
                             <input type="hidden" name="nodeId" value='1'/>
@@ -142,7 +141,7 @@
  {% endfor %}
             <tr>
                 <td colspan="9" style="text-align:center">
-                    <a href="{{ url_for('.AddExtraConfig',propertyID=properties.id) }}"><h4>新增ExtraConfig</h4></a>
+                    <a href="{{ url_for('.AddExtraConfig',PropertyId=properties.id) }}"><h4>新增ExtraConfig</h4></a>
                 </td>
             </tr>
 
@@ -152,7 +151,7 @@
             </tr>
             <tr>
                 <td style="text-align:center">
-                    <a href="{{ url_for('.AddExtraConfig',propertyID=properties.id) }}"><h4>新增ExtraConfig</h4></a>
+                    <a href="{{ url_for('.AddExtraConfig',PropertyId=properties.id) }}"><h4>新增ExtraConfig</h4></a>
                 </td>
             </tr>
 

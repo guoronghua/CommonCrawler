@@ -31,7 +31,7 @@
                     <td>{{extraconfig.value}}</td>
                     <td>{{extraconfig.extractorType}}</td>
                     <td>
-                        <form id="extraConfigShow" action="{{ url_for('.Nodes',NodeID=nodes.id) }}"
+                        <form id="extraConfigShow" action="{{ url_for('.Nodes',NodeId=nodes.id) }}"
                                 method="get" style="display:inline">
                             <input id="propId" name="propId" type="hidden" value='{{properties.id}}'/>
                             <button type="submit" class="btn btn-primary">Detail</button>
@@ -107,9 +107,9 @@
                 </tr>
                 <tr>
                     <td style="text-align:left">
-                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleID=rules.id) }}">返回Rule</a>
-                        <a class="btn btn-primary" href="{{ url_for('.Nodes',NodeID=nodes.id) }}">返回Node</a>
-                        <a class="btn btn-primary" href="{{ url_for('.Properties',PropertyID=properties.id) }}">返回Prop</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleId=rules.id) }}">返回Rule</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Nodes',NodeId=nodes.id) }}">返回Node</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Properties',PropertyId=properties.id) }}">返回Prop</a>
                     </td>
                     <td style="text-align:right">
                         {{ form.csrf_token }}

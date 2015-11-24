@@ -7,12 +7,11 @@ from .forms import RuleForm,NodeForm,PropertyForm,ExtraConfigForm
 import requests,time,os
 import json
 
-
 @main.route('/rule/index', methods=['GET', 'POST'])
 def Index():
     page = request.args.get('page', 1, type=int)
     rule=Rule.query
-    pagination = rule.order_by(Rule.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+    pagination = rule.order_by(Rule.timestamp.asc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     rules = pagination.items
     return render_template('index.html', rules=rules,pagination=pagination)
@@ -73,40 +72,40 @@ def AddProperty(NodeId):
             httpMethod=form.httpMethod.data,referer=form.referer.data,parserType=form.parserType.data,node_id=NodeId)
         db.session.add(properties)
         db.session.commit()
-        propertyID=properties.id
+        PropertyId=properties.id
         session['NodeId']=NodeId
         session['RuleId']=rules.id
-        return  redirect(url_for('.AddExtraConfig', propertyID=propertyID))
+        return  redirect(url_for('.AddExtraConfig', PropertyId=PropertyId))
     else:
         return render_template('AddProperty.html',form=form,rules=rules,nodes=nodes,properties=properties)
 
-@main.route('/rule/prop/skeleton?propId=<propertyID>#ExtraConfig', methods=['GET', 'POST'])
-def AddExtraConfig(propertyID):
-    form= ExtraConfigForm(propertyID)
+@main.route('/rule/prop/skeleton?propId=<PropertyId>#ExtraConfig', methods=['GET', 'POST'])
+def AddExtraConfig(PropertyId):
+    form= ExtraConfigForm(PropertyId)
     rules =Rule.query.filter_by(id=session.get('RuleId')).first()
     nodes=Node.query.filter_by(id=session.get('NodeId')).first()
-    properties=Property.query.filter_by(id=propertyID).first()
-    extraconfigs=ExtraConfig.query.filter_by(property_id=propertyID).all()
+    properties=Property.query.filter_by(id=PropertyId).first()
+    extraconfigs=ExtraConfig.query.filter_by(property_id=PropertyId).all()
     session['NodeId']=nodes.id
     session['RuleId']=rules.id
-    session['PropertyID']=properties.id
+    session['PropertyId']=properties.id
     if form.validate_on_submit():
         extraConfigs = ExtraConfig(inputType=form.inputType.data,inputOption=form.inputOption.data, transformType=form.transformType.data,
             extractorType=form.extractorType.data,condition=form.condition.data,value=form.value.data,
-            refExtraConfigId=form.refExtraConfigId.data,property_id=propertyID)
+            refExtraConfigId=form.refExtraConfigId.data,property_id=PropertyId)
         db.session.add(extraConfigs)
         db.session.commit()
         extraConfigID=extraConfigs.id
-        return  redirect(url_for('.AddExtraConfig', propertyID=propertyID))
+        return  redirect(url_for('.AddExtraConfig', PropertyId=PropertyId))
     else:
         return render_template('AddExtraConfig.html',form=form,rules=rules,nodes=nodes,properties=properties,extraconfigs=extraconfigs)
 
-@main.route('/rule/<RuleID>', methods=['GET', 'POST'])
-def Rules(RuleID):
+@main.route('/rule/<RuleId>', methods=['GET', 'POST'])
+def Rules(RuleId):
     form = RuleForm()
-    rules = Rule.query.get_or_404(RuleID)
-    nodes=Node.query.filter_by(rule_id=RuleID).all()
-    session['RuleId']=RuleID
+    rules = Rule.query.get_or_404(RuleId)
+    nodes=Node.query.filter_by(rule_id=RuleId).all()
+    session['RuleId']=RuleId
     if form.validate_on_submit():
         rules.description=form.description.data
         rules.pattern=form.pattern.data
@@ -115,7 +114,7 @@ def Rules(RuleID):
         rules.state=form.state.data
         db.session.add(rules)
         db.session.commit()
-        return  redirect(url_for('.Rules',RuleID=RuleID))
+        return  redirect(url_for('.Rules',RuleId=RuleId))
     else:
         form.description.data=rules.description
         form.pattern.data=rules.pattern
@@ -123,11 +122,11 @@ def Rules(RuleID):
         form.parserType.data=rules.parserType
         form.pageType.data=rules.pageType
         form.state.data=rules.state
-        return render_template('Rule.html',form=form,nodes=nodes,RuleID=RuleID)
+        return render_template('Rule.html',form=form,nodes=nodes,RuleId=RuleId)
 
-@main.route('/rule/delete/<RuleID>', methods=['GET', 'POST'])
-def DeleteRules(RuleID):
-    rules = Rule.query.get_or_404(RuleID)
+@main.route('/rule/delete/<RuleId>', methods=['GET', 'POST'])
+def DeleteRules(RuleId):
+    rules = Rule.query.get_or_404(RuleId)
     if  rules:
         db.session.delete(rules)
         db.session.commit()
@@ -135,14 +134,14 @@ def DeleteRules(RuleID):
     else:
         pass
 
-@main.route('/rule/copy/<RuleID>', methods=['GET', 'POST'])
-def CopyRules(RuleID):
-    rules = Rule.query.get_or_404(RuleID)
+@main.route('/rule/copy/<RuleId>', methods=['GET', 'POST'])
+def CopyRules(RuleId):
+    rules = Rule.query.get_or_404(RuleId)
     rule = Rule(description=u"复制于Rule %s"%rules.id,pattern=rules.pattern,instance=rules.instance,
                 parserType=rules.parserType,pageType=rules.pageType,state=rules.state)
     db.session.add(rule)
     db.session.commit()
-    nodes=Node.query.filter_by(rule_id=RuleID).all()
+    nodes=Node.query.filter_by(rule_id=RuleId).all()
     if nodes:
         for node in nodes:
             node1 = Node(label=node.label,nodeType=node.nodeType,parentNode=node.parentNode,
@@ -172,17 +171,16 @@ def CopyRules(RuleID):
                 pass
     else:
         pass
-    return  redirect(url_for('.Rules',RuleID=rule.id))
+    return  redirect(url_for('.Rules',RuleId=rule.id))
 
-
-@main.route('/rule/node/<NodeID>#Node', methods=['GET', 'POST'])
-def Nodes(NodeID):
+@main.route('/rule/node/<NodeId>#Node', methods=['GET', 'POST'])
+def Nodes(NodeId):
     rules = Rule.query.filter_by(id=session.get('RuleId')).first()
     form = NodeForm(RuleId=session.get('RuleId'))
-    nodes = Node.query.get_or_404(NodeID)
-    properties=Property.query.filter_by(node_id=NodeID).all()
+    nodes = Node.query.get_or_404(NodeId)
+    properties=Property.query.filter_by(node_id=NodeId).all()
     session['RuleId']=rules.id
-    session['NodeID']=nodes.id
+    session['NodeId']=nodes.id
     if form.validate_on_submit():
         nodes.label=form.label.data
         nodes.nodeType=form.nodeType.data
@@ -194,7 +192,7 @@ def Nodes(NodeID):
         nodes.value=form.value.data
         db.session.add(nodes)
         db.session.commit()
-        return  redirect(url_for('.Nodes',NodeID=NodeID))
+        return  redirect(url_for('.Nodes',NodeId=NodeId))
     else:
         form.label.data=nodes.label
         form.nodeType.data=nodes.nodeType
@@ -207,20 +205,20 @@ def Nodes(NodeID):
         form.value.data=nodes.value
         return render_template('Node.html',form=form,nodes=nodes,rules=rules,properties=properties)
 
-@main.route('/rule/node/delete/<NodeID>#Node', methods=['GET', 'POST'])
-def DeleteNodes(NodeID):
-    nodes = Node.query.get_or_404(NodeID)
+@main.route('/rule/node/delete/<NodeId>#Node', methods=['GET', 'POST'])
+def DeleteNodes(NodeId):
+    nodes = Node.query.get_or_404(NodeId)
     if  nodes:
         db.session.delete(nodes)
         db.session.commit()
-        return  redirect(url_for('.Rules',RuleID=session.get('RuleId')))
+        return  redirect(url_for('.Rules',RuleId=session.get('RuleId')))
     else:
         pass
 
 @main.route('/rule/node/copy', methods=['GET', 'POST'])
 def CopyNodes():
-    NodeID = request.args.get('nodeId')
-    nodes = Node.query.get_or_404(NodeID)
+    NodeId = request.args.get('nodeId')
+    nodes = Node.query.get_or_404(NodeId)
     node1 = Node(label=nodes.label,nodeType=nodes.nodeType,parentNode=nodes.parentNode,
                 inputType=nodes.inputType,inputOption=nodes.inputOption,extractorType=nodes.extractorType,
                 condition=nodes.condition,value=nodes.value,rule_id=session.get('RuleId'))
@@ -246,19 +244,19 @@ def CopyNodes():
                 pass
     else:
         pass
-    return  redirect(url_for('.Rules',RuleID=session.get('RuleId')))
+    return  redirect(url_for('.Rules',RuleId=session.get('RuleId')))
 
 
-@main.route('/rule/property/<PropertyID>', methods=['GET', 'POST'])
-def Properties(PropertyID):
+@main.route('/rule/property/<PropertyId>', methods=['GET', 'POST'])
+def Properties(PropertyId):
     rules = Rule.query.filter_by(id=session.get('RuleId')).first()
-    nodes = Node.query.filter_by(id=session.get('NodeID')).first()
-    properties = Property.query.get_or_404(PropertyID)
-    extraConfigs=ExtraConfig.query.filter_by(property_id=PropertyID).all()
+    nodes = Node.query.filter_by(id=session.get('NodeId')).first()
+    properties = Property.query.get_or_404(PropertyId)
+    extraConfigs=ExtraConfig.query.filter_by(property_id=PropertyId).all()
     session['RuleId']=rules.id
-    session['NodeID']=nodes.id
-    session['PropertyID']=properties.id
-    form= PropertyForm()
+    session['NodeId']=nodes.id
+    session['PropertyId']=properties.id
+    form= PropertyForm(NodeId=session.get('NodeId'))
     if form.validate_on_submit():
         properties.glue=form.glue.data
         properties.label=form.label.data
@@ -271,7 +269,7 @@ def Properties(PropertyID):
         properties.parserType=form.parserType.data
         db.session.add(properties)
         db.session.commit()
-        return  redirect(url_for('.Properties', PropertyID=PropertyID))
+        return  redirect(url_for('.Properties', PropertyId=PropertyId))
     else:
         form.glue.data=properties.glue
         form.label.data=properties.label
@@ -284,23 +282,23 @@ def Properties(PropertyID):
         form.resultType.data=properties.resultType
         return render_template('Property.html',form=form,rules=rules,nodes=nodes,properties=properties,extraConfigs=extraConfigs)
 
-@main.route('/rule/property/delete/<PropertyID>', methods=['GET', 'POST'])
-def DeleteProperties(PropertyID):
-    properties = Property.query.get_or_404(PropertyID)
+@main.route('/rule/property/delete/<PropertyId>', methods=['GET', 'POST'])
+def DeleteProperties(PropertyId):
+    properties = Property.query.get_or_404(PropertyId)
     if  properties:
         db.session.delete(properties)
         db.session.commit()
-        return  redirect(url_for('.Nodes',NodeID=session.get('NodeID')))
+        return  redirect(url_for('.Nodes',NodeId=session.get('NodeId')))
     else:
         pass
 
 @main.route('/rule/property/copy', methods=['GET', 'POST'])
 def CopyProperties():
-    PropertyID = request.args.get('propertyId')
-    properties = Property.query.get_or_404(PropertyID)
+    PropertyId = request.args.get('propertyId')
+    properties = Property.query.get_or_404(PropertyId)
     propertie1= Property(glue=properties.glue,label=properties.label,isRequired=properties.isRequired,
             isMultiply=properties.isMultiply,scopeType=properties.scopeType,resultType=properties.resultType,
-            httpMethod=properties.httpMethod,referer=properties.referer,parserType=properties.parserType,node_id=session.get('NodeID'))
+            httpMethod=properties.httpMethod,referer=properties.referer,parserType=properties.parserType,node_id=session.get('NodeId'))
     db.session.add(propertie1)
     db.session.commit()
     extraconfigs=ExtraConfig.query.filter_by(property_id=properties.id).all()
@@ -313,15 +311,18 @@ def CopyProperties():
             db.session.commit()
     else:
         pass
-    return  redirect(url_for('.Nodes',NodeID=session.get('NodeID')))
+    return  redirect(url_for('.Nodes',NodeId=session.get('NodeId')))
 
-@main.route('/rule/extraconfig/<ExtraConfigID>', methods=['GET', 'POST'])
-def ExtraConfigs(ExtraConfigID):
+@main.route('/rule/extraconfig/<ExtraConfigId>', methods=['GET', 'POST'])
+def ExtraConfigs(ExtraConfigId):
     rules = Rule.query.filter_by(id=session.get('RuleId')).first()
-    nodes = Node.query.filter_by(id=session.get('RuleId')).first()
-    properties = Property.query.filter_by(id=session.get('PropertyID')).first()
-    extraconfigs=ExtraConfig.query.get_or_404(ExtraConfigID)
-    form= ExtraConfigForm()
+    nodes = Node.query.filter_by(id=session.get('NodeId')).first()
+    properties = Property.query.filter_by(id=session.get('PropertyId')).first()
+    extraconfigs=ExtraConfig.query.get_or_404(ExtraConfigId)
+    form= ExtraConfigForm(PropertyId=session.get("PropertyId"))
+    session['RuleId']=rules.id
+    session['NodeId']=nodes.id
+    session['PropertyId']=properties.id
     if form.validate_on_submit():
         extraconfigs.inputType=form.inputType.data
         extraconfigs.inputOption=form.inputOption.data
@@ -332,7 +333,7 @@ def ExtraConfigs(ExtraConfigID):
         extraconfigs.refExtraConfigId=form.refExtraConfigId.data
         db.session.add(extraconfigs)
         db.session.commit()
-        return  redirect(url_for('.ExtraConfigs', ExtraConfigID=ExtraConfigID))
+        return  redirect(url_for('.ExtraConfigs', ExtraConfigId=ExtraConfigId))
     else:
         form.inputType.data=extraconfigs.inputType
         form.inputOption.data=extraconfigs.inputOption
@@ -343,20 +344,21 @@ def ExtraConfigs(ExtraConfigID):
         form.refExtraConfigId.data=extraconfigs.refExtraConfigId
         return render_template('ExtraConfig.html',form=form,rules=rules,nodes=nodes,properties=properties,extraconfigs=extraconfigs)
 
-@main.route('/rule/extraconfig/delete/<ExtraConfigID>', methods=['GET', 'POST'])
-def DeleteExtraConfigs(ExtraConfigID):
-    extraconfigs=ExtraConfig.query.get_or_404(ExtraConfigID)
+@main.route('/rule/extraconfig/delete/<ExtraConfigId>', methods=['GET', 'POST'])
+def DeleteExtraConfigs(ExtraConfigId):
+    extraconfigs=ExtraConfig.query.get_or_404(ExtraConfigId)
     if  extraconfigs:
         db.session.delete(extraconfigs)
         db.session.commit()
-        return  redirect(url_for('.Properties',PropertyID=session.get('PropertyID')))
+        return  redirect(url_for('.Properties',PropertyId=session.get('PropertyId')))
     else:
         pass
 
 
-@main.route('/rule/export/<RuleID>', methods=['GET', 'POST'])
-def ExportRules(RuleID):
-    rules = Rule.query.get_or_404(RuleID)
+@main.route('/rule/export/<RuleId>', methods=['GET', 'POST'])
+def ExportRules(RuleId):
+    RuleId=RuleId
+    rules = Rule.query.get_or_404(RuleId)
     ruleDic={}
     ruleExport={}
     ruleDic["'id"]=rules.id
@@ -365,21 +367,18 @@ def ExportRules(RuleID):
     ruleDic["'parserType"]=rules.parserType
     ruleDic["'pageType"]=rules.pageType
     ruleDic["'state"]=rules.state
-    ruleDic["'timestamp"]=rules.timestamp
+    ruleDic["'timestamp"]=str(rules.timestamp)
     ruleExport["rule'"]=ruleDic
     """查询父节点"""
     topNodeTrees=[]
-    nodes=Node.query.filter_by(rule_id=RuleID,parentNode=0).all()
-    # def ProductNodeTrees(nodes):
-    for node in nodes:
-        nodeDic={}
+    def ChildNodeTree(node):
         extraConfigDic={}
         topNodeTreesDic={}
         nodeDic["id"]=node.id
         nodeDic["label"]=node.label
         nodeDic["nodeType"]=node.nodeType
         nodeDic["parentNode"]=node.parentNode
-        nodeDic["ruleId"]=RuleID
+        nodeDic["ruleId"]=RuleId
         extraConfigDic["inputType"]=node.inputType
         extraConfigDic["inputOption"]=node.inputOption
         extraConfigDic["condition"]=node.condition
@@ -417,19 +416,31 @@ def ExportRules(RuleID):
                 ExtraConfigs.append(ExtraConfigsDic)
                 propTreesDic["extraConfigs"]=ExtraConfigs
             propTrees.append(propTreesDic)
-        # subnodes=Node.query.filter_by(parentNode=node.id).all()
-        # if subnodes:
-        #     ProductNodeTrees(subnodes)
-        # else:
-        #     pass
+        childNodeTrees=[]
+        subnodes=Node.query.filter_by(parentNode=node.id).all()
+        for subnode in subnodes:
+            childNodeTreesDic={}
+            ChildNodeTree(subnode)
+            childNodeTreesDic["propTrees"]=propTrees
+            childNodeTrees.append(childNodeTreesDic)
+
+        topNodeTreesDic["childNodeTrees"]=childNodeTrees
         topNodeTreesDic["propTrees"]=propTrees
         topNodeTrees.append(topNodeTreesDic)
         ruleExport["topNodeTrees"]=topNodeTrees
-    # ruleExport=json.dumps(ruleExport)
+        return ruleExport
+
+
+    nodes=Node.query.filter_by(rule_id=RuleId,parentNode=0).all()
+    for node in nodes:
+        nodeDic={}
+        ChildNodeTree(node)
+    ruleExport=json.dumps(ruleExport)
     f= open(os.getcwd()+"/rule.text",'w')
     f.writelines(ruleExport)
     f.close()
     return send_file(os.getcwd()+"/rule.text", as_attachment=True)
+
 
 
 

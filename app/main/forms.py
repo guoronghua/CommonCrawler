@@ -66,12 +66,12 @@ class ExtraConfigForm(Form):
      value=StringField(u'选项')
      refExtraConfigId=SelectField(u'前置配置项',coerce=int,default=1)
      submit = SubmitField(u'提交')
-     def __init__(self, PropertyID=None, ExtraConfig=ExtraConfig,*args, **kwargs):
+     def __init__(self, PropertyId=None, ExtraConfig=ExtraConfig,*args, **kwargs):
         super(ExtraConfigForm, self).__init__(*args, **kwargs)
         self.ExtraConfig=ExtraConfig
-        self.PropertyID=PropertyID
+        self.PropertyId=PropertyId
         self.refExtraConfigId.choices = [(1,0)]
-        for x in self.ExtraConfig.query.filter_by(property_id=self.PropertyID).all():
+        for x in self.ExtraConfig.query.filter_by(property_id=self.PropertyId).all():
             if x.id:
                 self.refExtraConfigId.choices.append((x.id,x.id))
             else:

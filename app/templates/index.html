@@ -90,7 +90,7 @@
                     <td>{{rule.pageType}}</td>
                     <td>{{rule.state}}</td>
                     <td>
-                        <form id="ruleShow" action="{{ url_for('.Rules',RuleID=rule.id) }}" method="get" style="display:inline">
+                        <form id="ruleShow" action="{{ url_for('.Rules',RuleId=rule.id) }}" method="get" style="display:inline">
                             <button type="submit" class="btn btn-primary">Detail</button>
                         </form>
                     </td>
@@ -109,12 +109,12 @@
                                 <li class="divider"></li>
                                 <li><a href="#" data-action="delete">删除</a></li>
                             </ul>
-                            <form class="js-form-delete" action="{{ url_for('.DeleteRules',RuleID=rule.id) }}" method="post" style="display: none">
+                            <form class="js-form-delete" action="{{ url_for('.DeleteRules',RuleId=rule.id) }}" method="post" style="display: none">
                                 <input type="hidden" name="page" value="1"/>
                                 <input type="hidden" name="_method" value="delete"/>
                             </form>
-                            <form class="js-form-copy" action="{{ url_for('.CopyRules',RuleID=rule.id) }}" method="post" style="display: none"></form>
-                            <form class="js-form-export" action="{{ url_for('.ExportRules',RuleID=rule.id) }}" method="post" style="display: none"></form>
+                            <form class="js-form-copy" action="{{ url_for('.CopyRules',RuleId=rule.id) }}" method="post" style="display: none"></form>
+                            <form class="js-form-export" action="{{ url_for('.ExportRules',RuleId=rule.id) }}" method="post" style="display: none"></form>
                         </div>
                     </td>
                 </tr>

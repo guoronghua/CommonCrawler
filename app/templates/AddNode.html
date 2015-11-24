@@ -24,7 +24,7 @@
                     <td>{{node.NodeType}}</td>
                     <td>{{node.parentNode}}</td>
                     <td>
-                        <form id="nodeShow" action="{{ url_for('.Nodes',NodeID=node.id) }}" method="get"
+                        <form id="nodeShow" action="{{ url_for('.Nodes',NodeId=node.id) }}" method="get"
                                 style="display:inline">
                             <button type="submit" class="btn btn-primary">Detail</button>
                         </form>
@@ -106,7 +106,7 @@
                 </tr>
                 <tr>
                     <td style="text-align:left">
-                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleID=rules.id) }}">返回Rule页</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleId=rules.id) }}">返回Rule页</a>
                     </td>
                     <td style="text-align:right">
                         {{ form.csrf_token }}

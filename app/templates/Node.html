@@ -65,7 +65,7 @@
                 </tr>
                 <tr>
                     <td style="text-align:left">
-                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleID=rules.id) }}">返回Rule页</a>
+                        <a class="btn btn-primary" href="{{ url_for('.Rules',RuleId=rules.id) }}">返回Rule页</a>
                     </td>
                     <td style="text-align:right">
                         {{ form.csrf_token }}
@@ -110,13 +110,13 @@
                     <td>{{properity.isRequired}}</td>
                     <td>{{properity.isMultiply}}</td>
                         <td>
-                            <form id="propShow" action=" {{ url_for('.Properties',PropertyID=properity.id) }}" method="get"
+                            <form id="propShow" action=" {{ url_for('.Properties',PropertyId=properity.id) }}" method="get"
                                     style="display:inline">
                                 <button type="submit" class="btn btn-primary">Detail</button>
                             </form>
                         </td>
                         <td>
-                            <form id="propDelete" action="{{ url_for('.DeleteProperties',PropertyID=properity.id) }}" method="post"
+                            <form id="propDelete" action="{{ url_for('.DeleteProperties',PropertyId=properity.id) }}" method="post"
                                     style="display:inline">
                                 <input id="ruleId" name="ruleId" type="hidden" value='5376'/>
                                 <input id="nodeId" name="nodeId" type="hidden" value='38578'/>
@@ -135,10 +135,7 @@
                 </tr>
                 <tr>
                     <td colspan="10" style="text-align:center">
-                        <form id="propCopy" action="/admin/rule/prop" method="post" style="display:inline">
-                            <input type="text" name="propIds" placeholder="PropId1,PropId2,..."/>
-                            <input id="ruleId" name="ruleId" type="hidden" value='5376'/>
-                            <input id="nodeId" name="nodeId" type="hidden" value='38578'/>
+                        <form id="propCopy" action="" method="post" style="display:inline">
                             <input type="hidden" name="_method" value="delete"/>
                             <button type="submit" class="btn btn-primary" style="margin-right:15px">删除Prop</button>
                         </form>
