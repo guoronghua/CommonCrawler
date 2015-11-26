@@ -6,6 +6,7 @@ from . import main
 from .forms import RuleForm,NodeForm,PropertyForm,ExtraConfigForm
 import requests,time,os
 import json
+from werkzeug.utils import secure_filename
 
 @main.route('/rule/index', methods=['GET', 'POST'])
 def Index():
@@ -358,6 +359,7 @@ def DeleteExtraConfigs(ExtraConfigId):
 @main.route('/rule/export/<RuleId>', methods=['GET', 'POST'])
 def ExportRules(RuleId):
     RuleId=RuleId
+    DOWNLOAD_FOLDER = os.getcwd()+"/app/static/Downloads"
     rules = Rule.query.get_or_404(RuleId)
     ruleDic={}
     ruleExport={}
@@ -429,11 +431,26 @@ def ExportRules(RuleId):
     for node in nodes:
         ChildNodeTree(node)
     ruleExport=json.dumps(ruleExport,check_circular=False)
-    f= open(os.getcwd()+"/rule.text",'w')
+    f= open(DOWNLOAD_FOLDER+"/rule.text",'w')
     f.writelines(ruleExport)
     f.close()
-    return send_file(os.getcwd()+"/rule.text", as_attachment=True)
+    return send_file(DOWNLOAD_FOLDER+"/rule.text", as_attachment=True)
 
+
+@main.route('/rule/upload', methods=['GET', 'POST'])
+def Upload():
+    UPLOAD_FOLDER = os.getcwd()+"/app/static/Uploads"
+    filenames = []
+    if request.method == 'GET':
+        return render_template('import.html')
+    elif request.method == 'POST':
+        # f = request.files['files']
+        uploaded_files = request.files.getlist("file[]")
+        for file in uploaded_files:
+            if file:
+                fname = secure_filename(file.filename)
+                file.save(os.path.join(UPLOAD_FOLDER, fname))
+        return '上传成功!!'
 
 
 
