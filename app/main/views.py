@@ -444,7 +444,6 @@ def Upload():
     if request.method == 'GET':
         return render_template('import.html')
     elif request.method == 'POST':
-        # f = request.files['files']
         uploaded_files = request.files.getlist("file[]")
         for file in uploaded_files:
             if file:
