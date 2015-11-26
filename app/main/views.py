@@ -371,9 +371,10 @@ def ExportRules(RuleId):
     ruleExport["rule'"]=ruleDic
     """查询父节点"""
     topNodeTrees=[]
-    def ChildNodeTree(node):
-        extraConfigDic={}
+    def ChildNodeTree(node,subnode=False):
         topNodeTreesDic={}
+        nodeDic={}
+        extraConfigDic={}
         nodeDic["id"]=node.id
         nodeDic["label"]=node.label
         nodeDic["nodeType"]=node.nodeType
@@ -416,32 +417,22 @@ def ExportRules(RuleId):
                 ExtraConfigs.append(ExtraConfigsDic)
                 propTreesDic["extraConfigs"]=ExtraConfigs
             propTrees.append(propTreesDic)
-        childNodeTrees=[]
-        subnodes=Node.query.filter_by(parentNode=node.id).all()
-        for subnode in subnodes:
-            childNodeTreesDic={}
-            ChildNodeTree(subnode)
-            childNodeTreesDic["propTrees"]=propTrees
-            childNodeTrees.append(childNodeTreesDic)
-
-        topNodeTreesDic["childNodeTrees"]=childNodeTrees
         topNodeTreesDic["propTrees"]=propTrees
-        topNodeTrees.append(topNodeTreesDic)
-        ruleExport["topNodeTrees"]=topNodeTrees
-        return ruleExport
-
+        if not subnode:
+            topNodeTrees.append(topNodeTreesDic)
+            ruleExport["topNodeTrees"]=topNodeTrees
+        subnodes=Node.query.filter_by(parentNode=node.id).all()
+        topNodeTreesDic["childNodeTrees"]=[ChildNodeTree(subnode,subnode=True) for subnode in subnodes if subnodes]
+        return topNodeTreesDic
 
     nodes=Node.query.filter_by(rule_id=RuleId,parentNode=0).all()
     for node in nodes:
-        nodeDic={}
         ChildNodeTree(node)
-    ruleExport=json.dumps(ruleExport)
+    ruleExport=json.dumps(ruleExport,check_circular=False)
     f= open(os.getcwd()+"/rule.text",'w')
     f.writelines(ruleExport)
     f.close()
     return send_file(os.getcwd()+"/rule.text", as_attachment=True)
-
-
 
 
 
