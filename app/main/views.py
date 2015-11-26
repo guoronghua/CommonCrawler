@@ -363,14 +363,15 @@ def ExportRules(RuleId):
     rules = Rule.query.get_or_404(RuleId)
     ruleDic={}
     ruleExport={}
-    ruleDic["'id"]=rules.id
-    ruleDic["'pattern"]=rules.pattern
-    ruleDic["'instance"]=rules.instance
-    ruleDic["'parserType"]=rules.parserType
-    ruleDic["'pageType"]=rules.pageType
-    ruleDic["'state"]=rules.state
-    ruleDic["'timestamp"]=str(rules.timestamp)
-    ruleExport["rule'"]=ruleDic
+    ruleDic["id"]=rules.id
+    ruleDic["pattern"]=rules.pattern
+    ruleDic["instance"]=rules.instance
+    ruleDic["parserType"]=rules.parserType
+    ruleDic["pageType"]=rules.pageType
+    ruleDic["state"]=rules.state
+    ruleDic["description"]=rules.description
+    ruleDic["timestamp"]=str(rules.timestamp)
+    ruleExport["rule"]=ruleDic
     """查询父节点"""
     topNodeTrees=[]
     def ChildNodeTree(node,subnode=False):
@@ -401,6 +402,7 @@ def ExportRules(RuleId):
             propDic["isMultiply"]=propertie.isMultiply
             propDic["scopeType"]=propertie.scopeType
             propDic["resultType"]=propertie.resultType
+            propDic["parserType"]=propertie.parserType
             propDic["httpMethod"]=propertie.httpMethod
             propDic["referer"]=propertie.referer
             propDic["nodeId"]=node.id
@@ -416,6 +418,7 @@ def ExportRules(RuleId):
                 ExtraConfigsDic["value"]=extraConfig.value
                 ExtraConfigsDic["extractorType"]=extraConfig.extractorType
                 ExtraConfigsDic["transformType"]=extraConfig.transformType
+                ExtraConfigsDic["refExtraConfigId"]=extraConfig.refExtraConfigId
                 ExtraConfigs.append(ExtraConfigsDic)
                 propTreesDic["extraConfigs"]=ExtraConfigs
             propTrees.append(propTreesDic)
@@ -449,7 +452,45 @@ def Upload():
             if file:
                 fname = secure_filename(file.filename)
                 file.save(os.path.join(UPLOAD_FOLDER, fname))
-        return '上传成功!!'
+                jsonData=json.load(open((UPLOAD_FOLDER+'/'+fname), 'r'))
+                ruleData=jsonData['rule']
+                rule = Rule(description=ruleData['description'],pattern=ruleData['pattern'],instance=ruleData['instance'],
+                parserType=ruleData['parserType'],pageType=ruleData['pageType'],state=ruleData['state'])
+                db.session.add(rule)
+                db.session.commit()
+                def Insert(x):
+                    node=x['node']
+                    extraConfig=x['extraConfig']
+                    propTrees=x['propTrees']
+                    childNodeTrees=x['childNodeTrees']
+                    nodes= Node(label=node['label'],nodeType=node['nodeType'],parentNode=node['parentNode'],
+                        inputType=extraConfig['inputType'],inputOption=extraConfig['inputOption'],extractorType=extraConfig['extractorType'],
+                        condition=extraConfig['condition'],value=extraConfig['value'],rule_id=rule.id)
+                    db.session.add(nodes)
+                    db.session.commit()
+                    for y in propTrees:
+                        if y:
+                            prop=y['prop']
+                            extraConfigs=y['extraConfigs']
+                            propertie= Property(glue=prop['glue'],label=prop['label'],isRequired=prop['isRequired'],
+                            isMultiply=prop['isMultiply'],scopeType=prop['scopeType'],resultType=prop['resultType'],
+                            httpMethod=prop['httpMethod'],referer=prop['referer'],parserType=prop['parserType'],node_id=nodes.id)
+                            db.session.add(propertie)
+                            db.session.commit()
+                            for z in extraConfigs:
+                                if z:
+                                    extraConfig = ExtraConfig(inputType=z['inputType'],inputOption=z['inputOption'], transformType=z['transformType'],
+                                            extractorType=z['extractorType'],condition=z['condition'],value=z['value'],
+                                            refExtraConfigId=z['refExtraConfigId'],property_id=propertie.id)
+                                    db.session.add(extraConfig)
+                                    db.session.commit()
+                    for w in childNodeTrees:
+                        if w:
+                            Insert(w)
+                    return "success!!"
 
-
-
+                topNodeTrees=jsonData['topNodeTrees']
+                for x  in topNodeTrees:
+                    if x:
+                        Insert(x)
+        return "导入成功！！"
