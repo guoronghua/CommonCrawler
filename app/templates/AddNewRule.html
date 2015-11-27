@@ -27,6 +27,12 @@
                     <td><span class="instance">实例(instance)*:</span></td>
                     <td>{{ form.instance(style="width:95%")}}</td>
                 </tr>
+                 {% if rules %}
+                  <tr>
+                    <td>站点名(siteName):</td>
+                    <td>{{rules.siteName}}</td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <td><span class="parserType">解析类型(parserType):</span></td>
                     <td>

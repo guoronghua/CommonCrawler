@@ -41,8 +41,8 @@ class NodeForm(Form):
 class PropertyForm(Form):
      glue=StringField(u'粘合标记')
      label=StringField(u'标签名', validators=[Required(),])
-     isRequired=SelectField(u'是否必须',choices=[(u'是',u'是'),(u'否',u'否')],default=u'是')
-     isMultiply=SelectField(u'是否多个',choices=[(u'是',u'是'),(u'否',u'否')],default=u'是')
+     isRequired=SelectField(u'是否必须',choices=[(u'是',u'是'),(u'否',u'否')],default=u'否')
+     isMultiply=SelectField(u'是否多个',choices=[(u'是',u'是'),(u'否',u'否')],default=u'否')
      scopeType=SelectField(u'可见范围',choices=[('LOCAL','LOCAL'),('NODE','NODE'),('RULE','RULE')],default='LOCAL')
      resultType=SelectField(u'导出类型', choices=[('TEXT','TEXT'),('KEY','KEY'),('LINK','LINK'),('XML','XML'),('FORMITEM','FORMITEM'),('HEADITEM','HEADITEM'),('CUSTOMITEM','CUSTOMITEM')],default='TEXT')
      httpMethod=SelectField(u'请求方式',choices=[('GET','GET'),('POST','POST')],default='GET')
@@ -64,13 +64,13 @@ class ExtraConfigForm(Form):
         ('UDF','UDF'),('XML','XML')],default='HTML')
      condition=StringField(u'条件' )
      value=StringField(u'选项')
-     refExtraConfigId=SelectField(u'前置配置项',coerce=int,default=1)
+     refExtraConfigId=SelectField(u'前置配置项',coerce=int,default=0)
      submit = SubmitField(u'提交')
      def __init__(self, PropertyId=None, ExtraConfig=ExtraConfig,*args, **kwargs):
         super(ExtraConfigForm, self).__init__(*args, **kwargs)
         self.ExtraConfig=ExtraConfig
         self.PropertyId=PropertyId
-        self.refExtraConfigId.choices = [(1,0)]
+        self.refExtraConfigId.choices = [(0,0)]
         for x in self.ExtraConfig.query.filter_by(property_id=self.PropertyId).all():
             if x.id:
                 self.refExtraConfigId.choices.append((x.id,x.id))

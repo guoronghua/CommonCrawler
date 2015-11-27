@@ -4,8 +4,7 @@ from .. import db
 from ..models import Rule,Node,Property,ExtraConfig
 from . import main
 from .forms import RuleForm,NodeForm,PropertyForm,ExtraConfigForm
-import requests,time,os
-import json
+import requests,time,os,json,urllib
 from werkzeug.utils import secure_filename
 
 @main.route('/rule/index', methods=['GET', 'POST'])
@@ -32,7 +31,10 @@ def AddNewRule():
     if form.validate_on_submit():
         description = Rule.query.filter_by(description=form.description.data).first()
         if description is None:
-            rule = Rule(description=form.description.data,pattern=form.pattern.data,instance=form.instance.data,
+            proto, rest = urllib.splittype(form.instance.data)
+            res, rest = urllib.splithost(rest)
+            siteName= "Unknow" if not res else res
+            rule = Rule(description=form.description.data,pattern=form.pattern.data,instance=form.instance.data,siteName=siteName.upper(),
                 parserType=form.parserType.data,pageType=form.pageType.data,state=form.state.data)
             db.session.add(rule)
             db.session.commit()
@@ -123,7 +125,7 @@ def Rules(RuleId):
         form.parserType.data=rules.parserType
         form.pageType.data=rules.pageType
         form.state.data=rules.state
-        return render_template('Rule.html',form=form,nodes=nodes,RuleId=RuleId)
+        return render_template('Rule.html',form=form,rules=rules,nodes=nodes,RuleId=RuleId)
 
 @main.route('/rule/delete/<RuleId>', methods=['GET', 'POST'])
 def DeleteRules(RuleId):
@@ -374,6 +376,7 @@ def ExportRules(RuleId):
     ruleExport["rule"]=ruleDic
     """查询父节点"""
     topNodeTrees=[]
+    IsorNot={u"是":True,u"否":False}
     def ChildNodeTree(node,subnode=False):
         topNodeTreesDic={}
         nodeDic={}
@@ -385,7 +388,7 @@ def ExportRules(RuleId):
         nodeDic["ruleId"]=RuleId
         extraConfigDic["inputType"]=node.inputType
         extraConfigDic["inputOption"]=node.inputOption
-        extraConfigDic["condition"]=node.condition
+        extraConfigDic["cond"]=node.condition
         extraConfigDic["value"]=node.value
         extraConfigDic["extractorType"]=node.extractorType
         topNodeTreesDic["node"]=nodeDic
@@ -398,8 +401,8 @@ def ExportRules(RuleId):
             propDic["id"]=propertie.id
             propDic["glue"]=propertie.glue
             propDic["label"]=propertie.label
-            propDic["isRequired"]=propertie.isRequired
-            propDic["isMultiply"]=propertie.isMultiply
+            propDic["isRequired"]=IsorNot[propertie.isRequired]
+            propDic["isMultiply"]=IsorNot[propertie.isMultiply]
             propDic["scopeType"]=propertie.scopeType
             propDic["resultType"]=propertie.resultType
             propDic["parserType"]=propertie.parserType
@@ -414,7 +417,7 @@ def ExportRules(RuleId):
                 ExtraConfigsDic["id"]=extraConfig.id
                 ExtraConfigsDic["inputType"]=extraConfig.inputType
                 ExtraConfigsDic["inputOption"]=extraConfig.inputOption
-                ExtraConfigsDic["condition"]=extraConfig.condition
+                ExtraConfigsDic["cond"]=extraConfig.condition
                 ExtraConfigsDic["value"]=extraConfig.value
                 ExtraConfigsDic["extractorType"]=extraConfig.extractorType
                 ExtraConfigsDic["transformType"]=extraConfig.transformType
@@ -448,16 +451,22 @@ def Upload():
         return render_template('import.html')
     elif request.method == 'POST':
         uploaded_files = request.files.getlist("file[]")
+        RuleID=[]
         for file in uploaded_files:
             if file:
                 fname = secure_filename(file.filename)
                 file.save(os.path.join(UPLOAD_FOLDER, fname))
                 jsonData=json.load(open((UPLOAD_FOLDER+'/'+fname), 'r'))
                 ruleData=jsonData['rule']
+                RuleID.append(ruleData["id"])
+                proto, rest = urllib.splittype(ruleData['instance'])
+                res, rest = urllib.splithost(rest)
+                siteName= "Unknow" if not res else res
                 rule = Rule(description=ruleData['description'],pattern=ruleData['pattern'],instance=ruleData['instance'],
-                parserType=ruleData['parserType'],pageType=ruleData['pageType'],state=ruleData['state'])
+                parserType=ruleData['parserType'],pageType=ruleData['pageType'],state=ruleData['state'],siteName=siteName.upper())
                 db.session.add(rule)
                 db.session.commit()
+                IsorNot={1:"是",0:"否"}
                 def Insert(x):
                     node=x['node']
                     extraConfig=x['extraConfig']
@@ -465,23 +474,33 @@ def Upload():
                     childNodeTrees=x['childNodeTrees']
                     nodes= Node(label=node['label'],nodeType=node['nodeType'],parentNode=node['parentNode'],
                         inputType=extraConfig['inputType'],inputOption=extraConfig['inputOption'],extractorType=extraConfig['extractorType'],
-                        condition=extraConfig['condition'],value=extraConfig['value'],rule_id=rule.id)
+                        condition=extraConfig['cond'],value=extraConfig['value'],rule_id=rule.id)
                     db.session.add(nodes)
                     db.session.commit()
                     for y in propTrees:
                         if y:
                             prop=y['prop']
                             extraConfigs=y['extraConfigs']
-                            propertie= Property(glue=prop['glue'],label=prop['label'],isRequired=prop['isRequired'],
-                            isMultiply=prop['isMultiply'],scopeType=prop['scopeType'],resultType=prop['resultType'],
+                            propertie= Property(glue=prop['glue'],label=prop['label'],isRequired=IsorNot[prop['isRequired']],
+                            isMultiply=IsorNot[prop['isMultiply']],scopeType=prop['scopeType'],resultType=prop['resultType'],
                             httpMethod=prop['httpMethod'],referer=prop['referer'],parserType=prop['parserType'],node_id=nodes.id)
                             db.session.add(propertie)
                             db.session.commit()
+                            TopextraConfigs={}
                             for z in extraConfigs:
-                                if z:
+                                if  z['refExtraConfigId']==0:
                                     extraConfig = ExtraConfig(inputType=z['inputType'],inputOption=z['inputOption'], transformType=z['transformType'],
-                                            extractorType=z['extractorType'],condition=z['condition'],value=z['value'],
-                                            refExtraConfigId=z['refExtraConfigId'],property_id=propertie.id)
+                                            extractorType=z['extractorType'],condition=z['cond'],value=z['value'],
+                                            refExtraConfigId=0,property_id=propertie.id)
+                                    db.session.add(extraConfig)
+                                    db.session.commit()
+                                    TopextraConfigs[z['id']]=extraConfig.id
+
+                            for z in extraConfigs:
+                                if  z['refExtraConfigId']!=0:
+                                    extraConfig = ExtraConfig(inputType=z['inputType'],inputOption=z['inputOption'], transformType=z['transformType'],
+                                            extractorType=z['extractorType'],condition=z['cond'],value=z['value'],
+                                            refExtraConfigId=TopextraConfigs[z['refExtraConfigId']],property_id=propertie.id)
                                     db.session.add(extraConfig)
                                     db.session.commit()
                     for w in childNodeTrees:
@@ -493,4 +512,5 @@ def Upload():
                 for x  in topNodeTrees:
                     if x:
                         Insert(x)
-        return "导入成功！！"
+        flash(u"导入成功！导入的RuleID为:"+','.join(map(str,RuleID)))
+        return render_template('import.html')

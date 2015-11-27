@@ -10,6 +10,7 @@ class Rule(db.Model):
     parserType=db.Column(db.String(64))
     pageType=db.Column(db.String(64))
     state=db.Column(db.String(64))
+    siteName=db.Column(db.String(64))
     nodes=db.relationship('Node', backref='rule', lazy='dynamic',cascade="all, delete-orphan")
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
