@@ -117,7 +117,7 @@ def Rules(RuleId):
         rules.state=form.state.data
         db.session.add(rules)
         db.session.commit()
-        return  redirect(url_for('.Rules',RuleId=RuleId))
+        return  redirect(url_for('.UpdateRules',RuleId=RuleId,updateState='success'))
     else:
         form.description.data=rules.description
         form.pattern.data=rules.pattern
@@ -126,6 +126,20 @@ def Rules(RuleId):
         form.pageType.data=rules.pageType
         form.state.data=rules.state
         return render_template('Rule.html',form=form,rules=rules,nodes=nodes,RuleId=RuleId)
+
+@main.route('/rule/<RuleId>/updateState=<updateState>#Rule', methods=['GET', 'POST'])
+def UpdateRules(RuleId,updateState):
+    form = RuleForm()
+    rules = Rule.query.get_or_404(RuleId)
+    nodes=Node.query.filter_by(rule_id=RuleId).all()
+    session['RuleId']=RuleId
+    form.description.data=rules.description
+    form.pattern.data=rules.pattern
+    form.instance.data=rules.instance
+    form.parserType.data=rules.parserType
+    form.pageType.data=rules.pageType
+    form.state.data=rules.state
+    return render_template('Rule.html',form=form,rules=rules,nodes=nodes,RuleId=RuleId,updateState=updateState)
 
 @main.route('/rule/delete/<RuleId>', methods=['GET', 'POST'])
 def DeleteRules(RuleId):
@@ -195,7 +209,7 @@ def Nodes(NodeId):
         nodes.value=form.value.data
         db.session.add(nodes)
         db.session.commit()
-        return  redirect(url_for('.Nodes',NodeId=NodeId))
+        return  redirect(url_for('.UpdateNodes',NodeId=NodeId,updateState='success'))
     else:
         form.label.data=nodes.label
         form.nodeType.data=nodes.nodeType
@@ -207,6 +221,27 @@ def Nodes(NodeId):
         form.condition.data=nodes.condition
         form.value.data=nodes.value
         return render_template('Node.html',form=form,nodes=nodes,rules=rules,properties=properties)
+
+
+@main.route('/rule/node/delete/<NodeId>/updateState=<updateState>#Node', methods=['GET', 'POST'])
+def UpdateNodes(NodeId,updateState):
+    rules = Rule.query.filter_by(id=session.get('RuleId')).first()
+    form = NodeForm(RuleId=session.get('RuleId'))
+    nodes = Node.query.get_or_404(NodeId)
+    properties=Property.query.filter_by(node_id=NodeId).all()
+    session['RuleId']=rules.id
+    session['NodeId']=nodes.id
+    form.label.data=nodes.label
+    form.nodeType.data=nodes.nodeType
+    form.parentNode.data=nodes.parentNode
+    form.label.data=nodes.label
+    form.inputType.data=nodes.inputType
+    form.inputOption.data=nodes.inputOption
+    form.extractorType.data=nodes.extractorType
+    form.condition.data=nodes.condition
+    form.value.data=nodes.value
+    return render_template('Node.html',form=form,nodes=nodes,rules=rules,properties=properties,updateState=updateState)
+
 
 @main.route('/rule/node/delete/<NodeId>#Node', methods=['GET', 'POST'])
 def DeleteNodes(NodeId):
@@ -463,7 +498,7 @@ def Upload():
                 res, rest = urllib.splithost(rest)
                 siteName= "Unknow" if not res else res
                 rule = Rule(description=ruleData['description'],pattern=ruleData['pattern'],instance=ruleData['instance'],
-                parserType=ruleData['parserType'],pageType=ruleData['pageType'],state=ruleData['state'],siteName=siteName.upper())
+                parserType=ruleData['parserType'],pageType=ruleData['pageType'],state='DISABLE',siteName=siteName.upper())
                 db.session.add(rule)
                 db.session.commit()
                 IsorNot={1:"是",0:"否"}
@@ -503,6 +538,7 @@ def Upload():
                                             refExtraConfigId=TopextraConfigs[z['refExtraConfigId']],property_id=propertie.id)
                                     db.session.add(extraConfig)
                                     db.session.commit()
+                                    TopextraConfigs[z['id']]=extraConfig.id
                     for w in childNodeTrees:
                         if w:
                             Insert(w)

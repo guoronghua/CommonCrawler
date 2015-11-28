@@ -1,6 +1,14 @@
 {% block page_content %}
 {% include 'AddNewRule.html' %}
 
+
+ {% if updateState=='success'%}
+    <div class="alert alert-success">
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+        <strong>Update Rule Success!</strong>
+    </div>
+{% endif %}
+
 <table class="table table-bordered table-striped">
     <tr>
         <td style="text-align:right">

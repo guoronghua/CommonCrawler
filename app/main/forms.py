@@ -12,7 +12,7 @@ class RuleForm(Form):
                                           u'请输入合法网址！')])
     parserType=SelectField(u'解析类型', choices=[("JSON",'JSON'),("XML",'XML'),("JSOUP",'JSOUP'),("IMAGE_MAGICK",'IMAGE_MAGICK')],default="JSON")
     pageType=SelectField(u'页面类型', choices=[("List",'List'),("Detail",'Detail')],default="List")
-    state=SelectField(u'状态', choices=[("Enable",'Enable'),("Disable",'Disable')],default="Disable")
+    state=SelectField(u'状态', choices=[("ENABLE",'ENABLE'),("DISABLE",'DISABLE')],default="DISABLE")
     submit = SubmitField(u'submit')
     def __init__(self,*args, **kwargs):
         super(RuleForm, self).__init__(*args, **kwargs)
