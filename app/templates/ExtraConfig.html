@@ -81,9 +81,14 @@
         </table>
     </div>
 </div>
+
+ {% if updateState=='success'%}
+    <div class="alert alert-success">
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+        <strong>Update ExtraConfig Success!</strong>
+    </div>
+{% endif %}
+
 {% endblock %}
 
-{% block scripts %}
-<script src="{{url_for('static', filename='form.js')}}"></script>
-{{super()}}
-{% endblock %}
+

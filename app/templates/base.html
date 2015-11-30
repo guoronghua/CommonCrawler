@@ -17,14 +17,15 @@
 
 
 {% block navbar %}
-<div class="container">
+<body id=body  onscroll=SetCookie("scroll",body.scrollTop); onload="scrollback();" >
+<div class="container" >
  <ul class="nav nav-tabs">
         <li class="dropdown" data-dropdown="dropdown">
             <a href="#" class="dropdown-toggle">规则管理</a>
             <ul class="dropdown-menu">
                 <li><a href="{{ url_for('.AddNewRule') }}">添加新的规则</a></li>
                 <li><a href="{{ url_for('.Index') }}">管理现有规则</a></li>
-                <li><a href="{{ url_for('.Upload') }}">导入现有规则</a></li>
+                <li><a href="{{ url_for('.UploadRules') }}">导入现有规则</a></li>
             </ul>
         </li>
         <li class="dropdown" data-dropdown="dropdown">
@@ -103,5 +104,7 @@
  {% block page_content %}{% endblock %}
 {% endblock %}
 {% block scripts %}
+
+
 <script type="text/javascript" src="http://s.wdjimg.com/style/js/run/mms/admin/nav.js"></script>
 {% endblock %}

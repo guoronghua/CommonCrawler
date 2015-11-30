@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div align="center"><h2>Rule Test</h2></div>
+
+<div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title">Rule</h4>
+        </div>
+        <table class="table table-bordered table-striped">
+            <tr>
+                <td style="width:25%">id:</td>
+                <td>5952</td>
+            </tr>
+            <tr>
+                <td>简介(description):</td>
+                <td>医学时间 最新资讯 list</td>
+            </tr>
+            <tr>
+                <td>模式(pattern):</td>
+                <td style="word-break:break-all; word-wrap:break-word;">
+                http://www\.dxy\.cn/webservices/article/latest/v3\.3.*limit=20.*pge=1.*
+                </td>
+            </tr>
+            <tr>
+                <td>实例(instance):</td>
+                <td>http://www.dxy.cn/webservices/article/latest/v3.3?limit=20&pge=1&mc=ffffffffad440a2da1e33cd50033c587&hardName=MX4&ac=9432e53c-74f7-44f9-be13-15f6cc3cd4ba&vc=3.8&vs=4.4.2&version=1</td>
+            </tr>
+            <tr>
+                <td>站点名(siteName):</td>
+                <td>WWW.DXY.CN</td>
+            </tr>
+            <tr>
+                <td>解析类型(parserType):</td>
+                <td>JSON</td>
+            </tr>
+            <tr>
+                <td>页面类型(pageType):</td>
+                <td>LIST</td>
+            </tr>
+            <tr>
+                <td>文档类型(docType):</td>
+                <td>DOC_TYPE_UNKNOWN</td>
+            </tr>
+            <tr>
+                <td>状态(state):</td>
+                <td>ENABLE</td>
+            </tr>
+            <tr>
+                <td>存储路径(storagePath):</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>通知地址(publishAddress):</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>作者(author):</td>
+                <td>郭容华</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a name="RuleTest">Rule测试</a>
+                <button onclick="activateTestHelp()" style="float:right;">Help</button>
+            </h4>
+        </div>
+        <table class="table table-bordered table-striped">
+            <form name="testForm" action="/admin/rule/5952/test" method="post" onsubmit="return submitTest();">
+                <tr>
+                    <td style="width:25%"><span class="testUrl">url*:</span></td>
+                    <td><input type="text" name="testUrl" style="width:95%" value=http://www.dxy.cn/webservices/article/latest/v3.3?limit=20&pge=1&mc=ffffffffad440a2da1e33cd50033c587&hardName=MX4&ac=9432e53c-74f7-44f9-be13-15f6cc3cd4ba&vc=3.8&vs=4.4.2&version=1></td>
+                </tr>
+                <tr>
+                    <td><span class="testHttpMethod">请求方式:</span></td>
+                    <td>
+                        <select id="testHttpMethod" name="testHttpMethod" onchange="toggleTestSetting();">
+                            <option value='GET'
+                            selected="selected">GET</option>
+                            <option value='POST'
+                            >POST</option>
+                            <option value='HEAD'
+                            >HEAD</option>
+                            <option value='DELETE'
+                            >DELETE</option>
+                            <option value='PUT'
+                            >PUT</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="testFetcherType">Fetcher 类型:</span></td>
+                    <td>
+                        <select id="testFetcherType" name="testFetcherType">
+                            <option value='NORMAL'
+                                    selected="selected">NORMAL</option>
+                            <option value='JS_ENGINE'
+                                    >JS_ENGINE</option>
+                            <option value='AMAZON'
+                                    >AMAZON</option>
+                            <option value='UNI_AMAZON'
+                                    >UNI_AMAZON</option>
+                            <option value='HTTPS'
+                                    >HTTPS</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="testNoUrlEnCoding">NoUrlEnCoding:</span></td>
+                    <td><input name="testNoUrlEnCoding" type="checkbox">NoUrlEnCoding</td>
+                </tr>
+                <tr>
+                    <td><span class="testReferer">引用页:</span></td>
+                    <td><input type="text" name="testReferer" style="width:95%" value=></td>
+                </tr>
+                <tr>
+                    <td><span class="testRefererInfo">引用页信息:</span></td>
+                    <td><textarea type="text" name="testRefererInfo" rows="8" style="width:95%"></textarea></td>
+                </tr>
+                <tr>
+                    <td><span class="testHeaders">请求头:</span></td>
+                    <td><textarea name="testHeaders" rows="4" style="width:95%"></textarea></td>
+                </tr>
+                <tr id="testFormsSetting" style="display: none">
+                    <td><span class="testForms">Post表单:</span></td>
+                    <td><textarea name="testForms" rows="4" style="width:95%"></textarea></td>
+                </tr>
+                <tr>
+                    <td><span class="testCustoms">自定义信息:</span></td>
+                    <td><textarea name="testCustoms" rows="4" style="width:95%"></textarea></td>
+                </tr>
+                <tr>
+                    <td><span class="testContent">测试内容:</span></td>
+                    <td><textarea name="testContent" rows="10" style="width:95%"></textarea></td>
+                </tr>
+                <tr>
+                    <td><span class="testContent">http消息体</span></td>
+                    <td><textarea name="httpEntity" rows="10" style="width:95%"></textarea></td>
+                </tr>
+                <tr>
+                    <td style="text-align:left">
+                        <a class="btn btn-primary" href="/admin/rule/5952#Rule">返回Rule</a>
+                    </td>
+                    <td style="text-align:right">
+                        <button type="submit" class="btn btn-primary" style="margin-right:15px">Submit</button>
+                    </td>
+                </tr>
+            </form>
+        </table>
+    </div>
+</div>
+    </div>
+
+{% endblock %}

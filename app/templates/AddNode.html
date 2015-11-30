@@ -54,7 +54,9 @@
             </h4>
         </div>
         <table class="table table-bordered table-striped">
-        <form name="ruleForm" method="POST">
+
+
+        <form name="ruleForm" method="POST"  onscroll=SetCookie("scroll",body.scrollTop); onload="scrollback();">
                 <tr>
                     <td style="width:30%"><span class="nodeLable">标签名(label)*</span></td>
                        <td>{{ form.label(style="width:30%")}} </td>
