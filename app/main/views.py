@@ -70,15 +70,6 @@ def Rules(RuleId):
         form.state.data=rules.state
         return render_template('Rule.html',form=form,rules=rules,nodes=nodes,RuleId=RuleId)
 
-@main.route('/rule/<RuleId>#RuleTest', methods=['GET', 'POST'])
-def Rules(RuleId):
-    form = RuleForm()
-    rules = Rule.query.get_or_404(RuleId)
-    session['RuleId']=RuleId
-
-    return render_template('Rule.html',form=form,rules=rules,nodes=nodes,RuleId=RuleId)
-
-
 @main.route('/rule/<RuleId>/updateState=<updateState>#Rule', methods=['GET', 'POST'])
 def UpdateRules(RuleId,updateState):
     form = RuleForm()
@@ -605,3 +596,18 @@ def DeleteExtraConfigs(ExtraConfigId):
     else:
         pass
 
+
+
+@main.route('/rule/<RuleId>#RuleTest', methods=['GET', 'POST'])
+def RulesTest(RuleId):
+    rules = Rule.query.get_or_404(RuleId)
+    session['RuleId']=RuleId
+    return render_template('RuleTest.html',form=form,rules=rules)
+
+@main.route('/rule/<RuleId>/test', methods=['GET', 'POST'])
+def TestResult(RuleId):
+    rules = Rule.query.get_or_404(RuleId)
+    nodes=Node.query.filter_by(rule_id=RuleId).all()
+    properties=[Property.query.filter_by(rule_id=node.id).all() for node in nodes]
+    session['RuleId']=RuleId
+    return render_template('RuleTest.html',form=form,rules=rules)

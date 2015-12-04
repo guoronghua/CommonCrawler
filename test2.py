@@ -1,8 +1,8 @@
 # #!/usr/bin/python
-# #coding=utf-8
-# import requests
-
-# s = requests.session()
+#coding=utf-8
+import requests
+s = requests.session()
+from urllib import urlencode
 # postData = {'_xsrf':'10758fdd2ab8d7747e88e28d5eae1b5f',
 #             'password':'****',
 #             'email':'373473032@qq.com',
@@ -31,24 +31,8 @@
 # # "cap_id":"MDZmNDk0ZDNmOTZhNDAwNmI1ZWFmN2M0YTU1NWEyMDI=|1436417608|47f7dd869b48f3fcc4eef91d8fcca4fcbea50916",
 # # "__utmt":"1",}
 # #post 换成登录的地址，
-# r=s.get('http://www.speckyboy.com/wp-content/plugins/mobiloud-mobile-app-plugin/posts.php/');
-# #换成抓取的地址
-# # print r.content
-# from flask import session
-# print help(session)
+r=s.get('http://10.16.29.80:8089/api/track?url=http%3A%2F%2Fnr.news-republic.com%2FWeb%2FArticleWeb.aspx%3Farticleid%3D52925830%26kuaixun%26regionid%3D3&isShowStructure=false&isUrlEncoding=true&isViewRawDataContent=false')
 
-urls = ["http://meiwen.me/src/index.html",
-          "http://1000chi.com/game/index.html",
-          "http://see.xidian.edu.cn/cpp/html/1429.html",
-          "https://docs.python.org/2/howto/regex.html",
-          """https://www.google.com.hk/search?client=aff-cs-360chromium&hs=TSj&q=url%E8%A7%A3%E6%9E%90%E5%9F%9F%E5%90%8Dre&oq=url%E8%A7%A3%E6%9E%90%E5%9F%9F%E5%90%8Dre&gs_l=serp.3...74418.86867.0.87673.28.25.2.0.0.0.541.2454.2-6j0j1j1.8.0....0...1c.1j4.53.serp..26.2.547.IuHTj4uoyHg""",
-          "file:///D:/code/echarts-2.0.3/doc/example/tooltip.html",
-          "http://api.mongodb.org/python/current/faq.html#is-pymongo-thread-safe",
-          "https://pypi.python.org/pypi/publicsuffix/",
-          "http://127.0.0.1:8000"
-          ]
-import urllib
-proto, rest = urllib.splittype("http://apinews6-front.newsrep.net/Flow/GetArticles?Version=115&P")
-res, rest = urllib.splithost(rest)
-siteName= "Unknow" if not res else res
-print siteName.upper()
+#换成抓取的地址
+# print r.content
+print  urlencode("http://nr.news-republic.com/Web/ArticleWeb.aspx?articleid=52925830&kuaixun&regionid=3")

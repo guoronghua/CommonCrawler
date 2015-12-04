@@ -25,12 +25,13 @@
             <form id="ruleTest" action="/admin/rule/5656/validate" method="get" style="display:inline">
                 <button type="submit" class="btn btn-primary">检验</button>
             </form>
-            <form id="ruleTest" action="/admin/rule/5656/test#RuleTest" method="get" style="display:inline">
+            <form id="ruleTest" action="{{ url_for('.RulesTest',RuleId=RuleId) }}" method="get" style="display:inline">
                 <button type="submit" class="btn btn-primary" style="margin-right:15px">测试</button>
             </form>
         </td>
     </tr>
 </table>
+
 
 <div>
     <div class="panel panel-primary">
@@ -69,8 +70,6 @@
                     </td>
                 </tr>
 {% endfor %}
-
-
             <tr>
                 <td colspan="8" style="text-align:center">
                     <form id="nodeCopy" action="{{ url_for('.CopyNodes') }}" method="get" style="display:inline">
@@ -84,5 +83,4 @@
     </div>
 </div>
     </div>
-
 {% endblock %}

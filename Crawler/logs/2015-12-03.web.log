@@ -1,0 +1,7 @@
+"127.0.0.1" - - [03/Dec/2015:01:15:05 +0000] "GET /spiders/ HTTP/1.1" 200 52 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
+"127.0.0.1" - - [03/Dec/2015:01:15:06 +0000] "GET /favicon.ico HTTP/1.1" 404 233 "http://localhost:8080/spiders/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
+"127.0.0.1" - - [03/Dec/2015:01:15:42 +0000] "GET /run-spider/dmoz HTTP/1.1" 200 32 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
+"127.0.0.1" - - [03/Dec/2015:01:16:51 +0000] "GET /run-spider/dmoz HTTP/1.1" 200 32 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
+"127.0.0.1" - - [03/Dec/2015:01:17:31 +0000] "GET /run-spider/cg-spider HTTP/1.1" 200 37 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
+"127.0.0.1" - - [03/Dec/2015:01:19:24 +0000] "GET /run-spider/cg-spider HTTP/1.1" 200 37 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
+"127.0.0.1" - - [03/Dec/2015:02:43:48 +0000] "GET /spiders/ HTTP/1.1" 200 52 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36"
