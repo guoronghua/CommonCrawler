@@ -104,6 +104,5 @@ config = {
     'production': ProductionConfig,
     'heroku': HerokuConfig,
     'unix': UnixConfig,
-
     'default': DevelopmentConfig
 }

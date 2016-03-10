@@ -2,7 +2,7 @@
 #coding=utf-8
 import requests
 s = requests.session()
-from urllib import urlencode
+# from urllib import urlencode
 # postData = {'_xsrf':'10758fdd2ab8d7747e88e28d5eae1b5f',
 #             'password':'****',
 #             'email':'373473032@qq.com',
@@ -31,8 +31,69 @@ from urllib import urlencode
 # # "cap_id":"MDZmNDk0ZDNmOTZhNDAwNmI1ZWFmN2M0YTU1NWEyMDI=|1436417608|47f7dd869b48f3fcc4eef91d8fcca4fcbea50916",
 # # "__utmt":"1",}
 # #post 换成登录的地址，
-r=s.get('http://10.16.29.80:8089/api/track?url=http%3A%2F%2Fnr.news-republic.com%2FWeb%2FArticleWeb.aspx%3Farticleid%3D52925830%26kuaixun%26regionid%3D3&isShowStructure=false&isUrlEncoding=true&isViewRawDataContent=false')
 
-#换成抓取的地址
-# print r.content
-print  urlencode("http://nr.news-republic.com/Web/ArticleWeb.aspx?articleid=52925830&kuaixun&regionid=3")
+
+
+from pyquery import PyQuery as pq
+import re
+def wandoujia(x):
+  if x.startswith('org.wandoujia'):
+    appstoreUrl="https://itunes.apple.com/cn/app/id"+str(x[14:])
+    r=s.get(appstoreUrl).content
+    responseData=pq(r)
+    appstoreEdition=responseData("span[itemprop='softwareVersion']").text()
+    Edition.append(appstoreEdition+"\n")
+  else:
+    wandoujiaUrl="http://www.wandoujia.com/apps/"+str(x)
+    r=s.get(wandoujiaUrl).content
+    pattern = re.compile(r'<dt>版本</dt>[\s\S]*?<dd>([\s\S]*?)</dd>')
+    match = pattern.search(r)
+    if match:
+      wandoujiaEdition= match.group(1)
+      Edition.append(wandoujiaEdition+"\n")
+    else:
+      Edition.append("None\n")
+
+
+def googleplay(x):
+  googleplayUrl="https://play.google.com/store/apps/details?id="+str(x)
+  r=s.get(googleplayUrl)
+  responseData=pq(r.content)
+  googleplayEdition=responseData("div.details-section-contents")("div.content[itemprop='softwareVersion']").text()
+  if googleplayEdition=="":
+    Edition.append("None\n")
+  else:
+    Edition.append(googleplayEdition+"\n")
+
+def appstore(x):
+  if x.startswith('org.wandoujia'):
+    appstoreUrl="https://itunes.apple.com/cn/app/id"+str(x[14:])
+    r=s.get("https://itunes.apple.com/cn/app/id373067909").content
+    responseData=pq(r)
+    appstoreEdition=responseData("span[itemprop='softwareVersion']").text()
+    if appstoreEdition=="":
+      Edition.append("None\n")
+    else:
+      Edition.append(appstoreEdition+"\n")
+    print  appstoreEdition
+  else:
+    Edition.append(appstoreEdition+"\n")
+  print  appstoreEdition
+
+
+packagelist="""com.suryani.jiagallery
+com.brixd.wallpager
+com.sleepnova.punapp
+cc.fotoplace.app
+com.yyets.zimuzu
+com.mandongkeji.comiclover
+org.wandoujia.373067909
+com.china.app.bbsandroid
+org.wandoujia.1013793052
+com.qinker.qinker"""
+Edition=[]
+packagelist=raw_input("请输入需要抓取的包名：")
+# for x in packagelist.split("\n"):
+#   wandoujia(x)
+# print "".join(Edition)
+print packagelist
