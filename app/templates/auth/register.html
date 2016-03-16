@@ -1,0 +1,35 @@
+{% extends "bootstrap/base.html" %}
+{% block head %}
+     <meta charset="UTF-8">
+    <title>Bootstrap Snippet: Login Form</title>
+    <link rel='stylesheet prefetch' href='http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css'>
+    <link rel="stylesheet"  href="{{url_for('static', filename='style.css')}}"/>
+{% endblock %}
+
+{% block content %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+<div class="wrapper">
+    <form class="form-signin">       
+      <h2 class="form-signin-heading">Please login</h2>
+      {{ form.email(class="form-control")}} 
+      
+      {{ form.password(class="form-control")}}      
+      {{ form.password(class="form-control")}} 
+      <label class="checkbox">
+        {{ form.remember_me}}  Remember me
+      </label>
+      {{ form.csrf_token }}
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button> 
+    <br>
+    <p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
+    <p>New user? <a href="{{ url_for('auth.register') }}">Click here to register</a>.</p>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="http://s.wdjimg.com/style/js/run/mms/admin/nav.js"></script>
+{% endblock %}

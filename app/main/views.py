@@ -34,6 +34,7 @@ def server_shutdown():
 
 
 @main.route('/rule/index', methods=['GET', 'POST'])
+@login_required
 def Index():
     page = request.args.get('page', 1, type=int)
     rule=Rule.query
@@ -43,6 +44,7 @@ def Index():
     return render_template('index.html', rules=rules,pagination=pagination)
 
 @main.route('/user/<username>')
+@login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
