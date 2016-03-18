@@ -9,17 +9,16 @@
 {% block content %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-
 <div class="wrapper">
     <form class="form-signin">       
       <h2 class="form-signin-heading">Please login</h2>
-      {{ form.email(class="form-control")}} 
-       {{ form.password(class="form-control")}}      
+      {{ form.email(style="form-control")}} 
+       {{ form.password(style="form-control")}}      
       <label class="checkbox">
         {{ form.remember_me}}  Remember me
       </label>
       {{ form.csrf_token }}
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button> 
+      <button class="btn btn-lg btn-primary btn-block" type="submit"></button> 
     <br>
     <p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
     <p>New user? <a href="{{ url_for('auth.register') }}">Click here to register</a>.</p>
