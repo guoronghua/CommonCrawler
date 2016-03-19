@@ -110,8 +110,8 @@ img { max-width: 100%; }
 
 .form-box {
 max-width: 500px;
-  padding: 15px 35px 45px;
-  margin: 0 auto;
+padding: 0px 35px 35px;
+margin: 0 auto;
 }
 .wrapper {
   margin-top: 80px;
@@ -135,7 +135,7 @@ max-width: 500px;
 
 .form-top-left h3 { margin-top: 0; color: #fff; }
 .form-top-left p { opacity: 0.8; color: #fff; }
-
+.checkbox  { opacity: 0.8; color: #fff;margin-left:18px; }
 .form-top-right {
 	float: left;
 	width: 25%;
@@ -168,7 +168,7 @@ max-width: 500px;
 }
 
 .social-login {
-	margin-top: 35px;
+	margin-top: 10px;
 }
 
 .social-login h3 {
