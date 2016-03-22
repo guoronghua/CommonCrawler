@@ -42,7 +42,7 @@
                                             <label class="sr-only" for="form-email">Password2</label>
                                               {{ form.password2(placeholder="Password2...",class_="form-password form-control")}} 
                                         </div>
-                                         {{ form.submit(class_="btn")}}
+                                         {{ form.csrf_token }}
                                         <button type="submit" class="btn"> Sign me up!</button>
                                     </form>
                                 </div>
