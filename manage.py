@@ -18,7 +18,7 @@ from app import create_app, db
 from app.models import Rule, Node,Property,ExtraConfig
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
-from gevent.pywsgi import WSGIServer
+# from gevent.pywsgi import WSGIServer
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
